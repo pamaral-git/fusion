@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#050a10" />
+    <meta name="description" content="A reusable, offline-first interactive equity research report." />
+    <link rel="icon" href="data:," />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <title>Fusion Research — Interactive Equity Research</title>
+    <style>
+      :root {
+        --lime: #c8f420;
+        --lime-dim: #96be18;
+        --lime-soft: rgba(200, 244, 32, .09);
+        --bg: #050a10;
+        --bg-raised: #09131e;
+        --bg-panel: rgba(10, 20, 31, .86);
+        --bg-panel-solid: #0b1723;
+        --line: rgba(142, 174, 201, .17);
+        --line-strong: rgba(142, 174, 201, .31);
+        --text: #f0f4f8;
+        --text-mid: #b1c0cf;
+        --text-dim: #74899f;
+        --blue: #60a5fa;
+        --blue-dark: #2c69ae;
+        --green: #4ade80;
+        --amber: #fbbf24;
+        --red: #fb7185;
+        --purple: #c084fc;
+        --serif: ui-serif, Georgia, Cambria, "Times New Roman", serif;
+        --sans: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
+        --mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+        --shadow: 0 22px 70px rgba(0, 0, 0, .22);
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body { min-width: 320px; margin: 0; color: var(--text); background: var(--bg); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+      button, input, select, textarea { font: inherit; }
+      button { cursor: pointer; }
+      button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
+      .noise, .grid-bg { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+      .noise { opacity: .28; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E"); }
+      .grid-bg { background-image: linear-gradient(rgba(96,165,250,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(96,165,250,.025) 1px, transparent 1px); background-size: 92px 92px; mask-image: radial-gradient(ellipse 85% 64% at 50% 0%, black, transparent 86%); }
+      .shell { width: min(1280px, calc(100% - 40px)); margin: 0 auto; }
+
+      .doc-header { display: flex; align-items: center; gap: 16px; padding: 30px 0 24px; border-bottom: 1px solid var(--line); }
+      .mark { display: grid; flex: 0 0 auto; width: 43px; height: 43px; place-items: center; border-radius: 10px; color: var(--bg); background: var(--lime); box-shadow: 0 0 26px rgba(200,244,32,.14); font-family: var(--mono); font-size: 20px; font-weight: 800; }
+      .doc-heading { min-width: 0; }
+      .doc-heading h1 { margin: 0; color: var(--text); font-size: clamp(20px, 2vw, 27px); letter-spacing: -.055em; line-height: 1.02; }
+      .doc-heading h1 span { color: var(--lime); }
+      .doc-heading p { margin: 5px 0 0; color: var(--text-dim); font-family: var(--mono); font-size: 10px; letter-spacing: .055em; text-transform: uppercase; }
+      .doc-controls { display: flex; align-items: center; gap: 9px; margin-left: auto; }
+      .issuer-control { display: flex; align-items: center; width: min(305px, 26vw); padding: 9px 11px; border: 1px solid var(--line); border-radius: 7px; background: rgba(9,19,30,.62); }
+      .issuer-control span { margin-right: 8px; color: var(--lime); font-family: var(--mono); }
+      .issuer-control input { min-width: 0; width: 100%; border: 0; outline: 0; color: var(--text); background: transparent; font-family: var(--mono); font-size: 12px; font-weight: 600; }
+      .utility { min-height: 37px; padding: 0 11px; border: 1px solid var(--line); border-radius: 7px; color: var(--text-mid); background: transparent; font-size: 11px; font-weight: 700; transition: color .16s, border-color .16s, background .16s; }
+      .utility:hover { border-color: var(--line-strong); color: var(--text); background: var(--bg-raised); }
+      .utility.primary { color: var(--bg); border-color: var(--lime); background: var(--lime); }
+      .utility.primary:hover { background: #d8ff51; }
+
+      .kpi-ribbon { position: sticky; top: 0; z-index: 6; display: grid; grid-template-columns: repeat(6, 1fr); margin: 0 calc((1280px - 100vw) / 2) 0; padding: 0 max(20px, calc((100vw - 1280px) / 2)); border-bottom: 1px solid var(--line); background: rgba(5,10,16,.87); backdrop-filter: blur(16px); }
+      .kpi { min-width: 0; padding: 13px 16px 14px; border-right: 1px solid var(--line); }
+      .kpi:first-child { border-left: 1px solid var(--line); }
+      .kpi .label { display: block; margin-bottom: 6px; color: var(--text-dim); font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+      .kpi .value { overflow: hidden; color: var(--text); font-family: var(--mono); font-size: clamp(14px, 1.45vw, 19px); font-weight: 700; letter-spacing: -.055em; text-overflow: ellipsis; white-space: nowrap; }
+      .kpi.target .value { color: var(--lime); }
+
+      .scenario-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 18px 0 12px; }
+      .scenario-copy { color: var(--text-dim); font-family: var(--mono); font-size: 10px; letter-spacing: .03em; }
+      .scenarios { display: flex; gap: 5px; padding: 4px; border: 1px solid var(--line); border-radius: 7px; background: rgba(9,19,30,.54); }
+      .scenarios button { padding: 7px 13px; border: 0; border-radius: 4px; color: var(--text-dim); background: transparent; font-family: var(--mono); font-size: 10px; font-weight: 700; }
+      .scenarios button:hover { color: var(--text); }
+      .scenarios button.active { color: var(--bg); background: var(--lime); }
+
+      .document-layout { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 36px; padding: 29px 0 90px; }
+      .toc { position: sticky; top: 84px; align-self: start; padding-top: 7px; }
+      .toc-title { margin: 0 0 10px; color: var(--text-dim); font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+      .toc a { display: block; padding: 7px 0 7px 10px; border-left: 1px solid var(--line); color: var(--text-dim); font-family: var(--mono); font-size: 10px; line-height: 1.25; text-decoration: none; transition: color .16s, border-color .16s; }
+      .toc a:hover, .toc a.active { border-color: var(--lime); color: var(--text); }
+      .report { max-width: 980px; }
+      .report-intro { padding: 4px 0 32px; }
+      .report-type { margin: 0 0 12px; color: var(--lime); font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+      .report-intro h2 { max-width: 820px; margin: 0 0 15px; color: var(--text); font-size: clamp(37px, 5vw, 65px); letter-spacing: -.073em; line-height: .96; }
+      .report-intro p { max-width: 720px; margin: 0; color: var(--text-mid); font-size: 16px; line-height: 1.62; }
+      .report-section { position: relative; padding: 31px 0 34px; border-top: 1px solid var(--line); scroll-margin-top: 85px; }
+      .section-index { margin-bottom: 9px; color: var(--lime); font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .12em; }
+      .report-section h2 { margin: 0 0 13px; color: var(--text); font-size: clamp(25px, 2.5vw, 34px); letter-spacing: -.052em; line-height: 1.08; }
+      .report-section h3 { margin: 25px 0 9px; color: var(--text); font-size: 16px; letter-spacing: -.025em; }
+      .report-section > p { max-width: 780px; margin: 0 0 14px; color: var(--text-mid); font-size: 14px; line-height: 1.75; }
+      [data-bind] { color: var(--lime); font-family: var(--mono); font-size: .92em; font-weight: 700; white-space: nowrap; }
+      .citation { color: var(--text-dim); font-family: var(--mono); font-size: 10px; white-space: nowrap; }
+      .insight { max-width: 820px; margin: 20px 0; padding: 15px 18px; border-left: 3px solid var(--lime); border-radius: 0 7px 7px 0; color: var(--text-mid); background: linear-gradient(90deg, rgba(200,244,32,.08), rgba(96,165,250,.025)); font-family: var(--serif); font-size: 16px; font-style: italic; line-height: 1.55; }
+      .insight small { display: block; margin-top: 8px; color: var(--text-dim); font-family: var(--mono); font-size: 9px; font-style: normal; letter-spacing: .06em; text-transform: uppercase; }
+
+      .module { margin: 23px 0 4px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg-panel); box-shadow: var(--shadow); overflow: hidden; }
+      .module-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; padding: 17px 19px; border-bottom: 1px solid var(--line); }
+      .module-head h3 { margin: 0; font-size: 14px; }
+      .module-head p { margin: 4px 0 0; color: var(--text-dim); font-size: 11px; line-height: 1.4; }
+      .module-tag { color: var(--lime); font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+      .driver-module { display: grid; grid-template-columns: minmax(230px, .8fr) minmax(0, 1.2fr); }
+      .issuer-inputs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .issuer-inputs .control-deck + .control-deck { border-right: 0; }
+      .control-deck { padding: 18px 19px; border-right: 1px solid var(--line); }
+      .control-deck h4, .evidence-card h4 { margin: 0 0 13px; color: var(--text-dim); font-family: var(--mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; }
+      .control { margin-bottom: 16px; }
+      .control:last-child { margin-bottom: 0; }
+      .control-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 7px; }
+      .control label { color: var(--text-mid); font-size: 11px; font-weight: 600; }
+      .control output { color: var(--lime); font-family: var(--mono); font-size: 11px; font-weight: 700; }
+      .control-row { display: grid; grid-template-columns: minmax(0, 1fr) 67px; gap: 10px; align-items: center; }
+      input[type="range"] { width: 100%; height: 4px; appearance: none; border-radius: 20px; background: #203448; accent-color: var(--lime); }
+      input[type="range"]::-webkit-slider-thumb { width: 14px; height: 14px; appearance: none; border: 2px solid var(--bg-panel-solid); border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 1px var(--lime); }
+      input[type="number"] { width: 100%; height: 29px; padding: 0 7px; border: 1px solid var(--line-strong); border-radius: 5px; color: var(--text); background: #08111b; font-family: var(--mono); font-size: 10px; }
+      .chart-space { padding: 18px 20px 16px; }
+      .legend { display: flex; justify-content: flex-end; gap: 14px; margin: 0 1px 9px; color: var(--text-dim); font-family: var(--mono); font-size: 9px; }
+      .legend i { display: inline-block; width: 6px; height: 6px; margin-right: 4px; border-radius: 50%; vertical-align: 1px; }
+      .trajectory { display: block; width: 100%; height: 220px; overflow: visible; }
+      .trajectory .grid { stroke: rgba(142,174,201,.18); stroke-width: 1; }
+      .trajectory text { fill: var(--text-dim); font-family: var(--mono); font-size: 9px; }
+      .trajectory .revenue { fill: none; stroke: var(--blue); stroke-width: 2.4; }
+      .trajectory .ebitda { fill: none; stroke: var(--lime); stroke-width: 2.4; }
+      .trajectory .dot-revenue { fill: var(--blue); stroke: var(--bg); stroke-width: 2; }
+      .trajectory .dot-ebitda { fill: var(--lime); stroke: var(--bg); stroke-width: 2; }
+
+      .architecture { display: grid; grid-template-columns: 1.05fr .95fr; gap: 14px; }
+      .stack-list { border: 1px solid var(--line); border-radius: 9px; overflow: hidden; background: rgba(9,19,30,.42); }
+      .stack-row { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 13px 14px; border-bottom: 1px solid var(--line); }
+      .stack-row:last-child { border-bottom: 0; }
+      .stack-row .num { color: var(--lime); font-family: var(--mono); font-size: 10px; }
+      .stack-row strong { display: block; color: var(--text); font-size: 12px; }
+      .stack-row span { display: block; margin-top: 2px; color: var(--text-dim); font-size: 10px; line-height: 1.35; }
+      .stack-row b { color: var(--text-mid); font-family: var(--mono); font-size: 10px; }
+      .evidence-card { padding: 16px; border: 1px solid var(--line); border-radius: 9px; background: rgba(9,19,30,.44); }
+      .evidence-row { padding: 11px 0; border-bottom: 1px solid var(--line); }
+      .evidence-row:last-child { border-bottom: 0; }
+      .evidence-row strong { display: block; color: var(--text-mid); font-size: 11px; }
+      .evidence-row span { display: block; margin-top: 3px; color: var(--text-dim); font-family: var(--mono); font-size: 9px; line-height: 1.45; }
+      .evidence-row em { color: var(--amber); font-style: normal; }
+
+      .method-tabs { display: flex; gap: 5px; padding: 14px 18px 0; }
+      .method-tabs button { padding: 7px 10px; border: 1px solid transparent; border-radius: 5px; color: var(--text-dim); background: transparent; font-family: var(--mono); font-size: 10px; font-weight: 700; }
+      .method-tabs button:hover { color: var(--text); }
+      .method-tabs button.active { border-color: rgba(200,244,32,.24); color: var(--lime); background: var(--lime-soft); }
+      .method-body { display: grid; grid-template-columns: 1fr .92fr; gap: 20px; padding: 19px; }
+      .method-body h4 { margin: 0 0 8px; color: var(--text); font-size: 18px; letter-spacing: -.035em; }
+      .method-body p { margin: 0; color: var(--text-mid); font-size: 12px; line-height: 1.65; }
+      .result-card { padding: 16px; border-left: 2px solid var(--lime); background: rgba(200,244,32,.055); }
+      .result-card span { display: block; color: var(--text-dim); font-family: var(--mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; }
+      .result-card strong { display: block; margin-top: 6px; color: var(--lime); font-family: var(--mono); font-size: 33px; letter-spacing: -.08em; }
+      .result-card p { margin-top: 6px; color: var(--text-dim); font-family: var(--mono); font-size: 10px; }
+
+      .analysis-grid { display: grid; grid-template-columns: 1.14fr .86fr; gap: 16px; }
+      .sensitivity { padding: 16px 18px 19px; }
+      .sensitivity-head, .bridge-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 13px; }
+      .sensitivity h3, .bridge h3 { margin: 0; font-size: 14px; }
+      .sensitivity-head span, .bridge-head span { color: var(--text-dim); font-family: var(--mono); font-size: 9px; }
+      .matrix-wrap { overflow-x: auto; }
+      .matrix { width: 100%; min-width: 480px; border-collapse: separate; border-spacing: 3px; }
+      .matrix th { padding: 4px 2px; color: var(--text-dim); font-family: var(--mono); font-size: 9px; text-align: center; }
+      .matrix th:first-child { text-align: left; }
+      .matrix td { min-width: 54px; padding: 8px 4px; border-radius: 4px; color: #172010; font-family: var(--mono); font-size: 10px; font-weight: 700; text-align: center; }
+      .matrix td.row-head { color: var(--text-dim); background: transparent; text-align: left; }
+      .bridge { padding: 16px 18px 19px; }
+      .bridge-chart { display: block; width: 100%; height: 230px; overflow: visible; }
+      .bridge-chart .axis { stroke: var(--line-strong); stroke-width: 1; }
+      .bridge-chart text { fill: var(--text-dim); font-family: var(--mono); font-size: 9px; }
+      .bridge-chart .value { fill: var(--text); font-size: 10px; font-weight: 700; }
+      .bridge-chart .label { font-size: 8px; }
+
+      .research-pack { display: grid; grid-template-columns: .72fr 1.28fr; gap: 16px; }
+      .source-ledger { padding: 16px 18px; border: 1px solid var(--line); border-radius: 9px; background: rgba(9,19,30,.46); }
+      .source-ledger h3 { margin: 0 0 10px; font-size: 13px; }
+      .source-ledger p { margin: 0 0 11px; color: var(--text-dim); font-size: 11px; line-height: 1.5; }
+      .source-status { display: grid; grid-template-columns: 8px 1fr auto; gap: 8px; align-items: center; padding: 9px 0; border-top: 1px solid var(--line); }
+      .source-status i { width: 7px; height: 7px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 10px rgba(200,244,32,.35); }
+      .source-status i.pending { background: var(--text-dim); box-shadow: none; }
+      .source-status span { color: var(--text-mid); font-size: 11px; }
+      .source-status b { color: var(--text-dim); font-family: var(--mono); font-size: 8px; letter-spacing: .05em; }
+      .brief { padding: 16px 18px; border: 1px solid var(--line); border-radius: 9px; background: rgba(9,19,30,.46); }
+      .brief h3 { margin: 0 0 10px; font-size: 13px; }
+      .brief textarea { width: 100%; min-height: 196px; padding: 12px; resize: vertical; border: 1px solid var(--line); border-radius: 6px; color: var(--text-mid); background: #060e16; font-family: var(--mono); font-size: 10px; line-height: 1.55; }
+      .brief-actions { display: flex; gap: 8px; margin-top: 10px; }
+      .footer { padding: 22px 0 58px; border-top: 1px solid var(--line); color: var(--text-dim); font-family: var(--mono); font-size: 9px; line-height: 1.7; text-align: center; }
+      .toast { position: fixed; right: 20px; bottom: 20px; z-index: 20; padding: 11px 14px; border: 1px solid rgba(200,244,32,.55); border-radius: 7px; color: var(--bg); background: var(--lime); box-shadow: 0 12px 36px rgba(0,0,0,.3); font-size: 11px; font-weight: 700; opacity: 0; pointer-events: none; transform: translateY(12px); transition: .18s ease; }
+      .toast.show { opacity: 1; transform: translateY(0); }
+
+      @media (max-width: 880px) {
+        .shell { width: min(100% - 28px, 780px); }
+        .doc-header { align-items: flex-start; flex-wrap: wrap; }
+        .doc-controls { width: 100%; margin-left: 0; }
+        .issuer-control { width: auto; flex: 1; }
+        .kpi-ribbon { grid-template-columns: repeat(3, 1fr); margin: 0 -14px; padding: 0 14px; }
+        .kpi:nth-child(4) { border-left: 1px solid var(--line); }
+        .document-layout { grid-template-columns: 1fr; gap: 0; }
+        .toc { display: none; }
+        .driver-module, .issuer-inputs, .architecture, .method-body, .analysis-grid, .research-pack { grid-template-columns: 1fr; }
+        .control-deck { border-right: 0; border-bottom: 1px solid var(--line); }
+        .issuer-inputs .control-deck:last-child { border-bottom: 0; }
+      }
+      @media (max-width: 540px) {
+        .shell { width: min(100% - 22px, 540px); }
+        .doc-header { gap: 11px; padding-top: 18px; }
+        .mark { width: 36px; height: 36px; font-size: 17px; }
+        .doc-heading h1 { font-size: 19px; }
+        .doc-controls { gap: 6px; }
+        .utility { min-height: 34px; padding: 0 9px; }
+        .utility:not(.primary) { display: none; }
+        .kpi-ribbon { grid-template-columns: repeat(2, 1fr); }
+        .kpi { padding: 10px 9px; }
+        .kpi:nth-child(2n+1) { border-left: 1px solid var(--line); }
+        .scenario-row { align-items: flex-start; flex-direction: column; gap: 9px; }
+        .scenarios { width: 100%; }
+        .scenarios button { flex: 1; }
+        .report-intro h2 { font-size: 39px; }
+        .report-intro p { font-size: 14px; }
+        .report-section { padding: 25px 0; }
+        .module-head { padding: 14px; }
+        .control-deck, .chart-space, .method-body, .sensitivity, .bridge, .source-ledger, .brief { padding: 14px; }
+        .brief-actions .utility { display: block; flex: 1; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="noise" aria-hidden="true"></div>
+    <div class="grid-bg" aria-hidden="true"></div>
+    <header class="shell doc-header">
+      <div class="mark" aria-label="Fusion Research">ƒ</div>
+      <div class="doc-heading">
+        <h1>Fusion <span>Research</span></h1>
+        <p>Interactive equity research · local model</p>
+      </div>
+      <div class="doc-controls">
+        <label class="issuer-control"><span>⌕</span><input id="company-name" data-text-key="companyName" aria-label="Company name and ticker" value="Northstar Systems (NSTR)" /></label>
+        <button class="utility" id="load-model">Load</button>
+        <button class="utility" id="save-model">Save</button>
+        <button class="utility primary" id="export-csv">Export</button>
+      </div>
+    </header>
+
+    <section class="kpi-ribbon" aria-label="Model key performance indicators">
+      <div class="kpi"><span class="label">Current price</span><span class="value" data-bind="currentPrice" data-format="price"></span></div>
+      <div class="kpi"><span class="label">Market cap</span><span class="value" data-bind="marketCap" data-format="billions"></span></div>
+      <div class="kpi"><span class="label">2026E revenue</span><span class="value" data-bind="revenue2026" data-format="billions"></span></div>
+      <div class="kpi"><span class="label">2027E EBITDA</span><span class="value" data-bind="ebitda2027" data-format="billions"></span></div>
+      <div class="kpi"><span class="label">Net cash</span><span class="value" data-bind="netCash" data-format="billions"></span></div>
+      <div class="kpi target"><span class="label">Risk-adjusted target</span><span class="value" data-bind="targetPrice" data-format="price"></span></div>
+    </section>
+
+    <main class="shell">
+      <div class="scenario-row">
+        <span class="scenario-copy">Changing a scenario updates the report, valuation, charts, and research brief.</span>
+        <div class="scenarios" role="group" aria-label="Research scenario">
+          <button data-scenario="bear">Bear</button>
+          <button class="active" data-scenario="base">Base</button>
+          <button data-scenario="bull">Bull</button>
+        </div>
+      </div>
+
+      <div class="document-layout">
+        <nav class="toc" aria-label="Research sections">
+          <p class="toc-title">In this report</p>
+          <a class="active" href="#summary">01 / Summary</a>
+          <a href="#operating">02 / Operating model</a>
+          <a href="#architecture">03 / Revenue architecture</a>
+          <a href="#valuation">04 / Valuation engine</a>
+          <a href="#analysis">05 / Scenario analysis</a>
+          <a href="#evidence">06 / Research pack</a>
+        </nav>
+
+        <article class="report">
+          <header class="report-intro" id="summary">
+            <p class="report-type" data-bind="companyName">Northstar Systems (NSTR)</p>
+            <h2>Interactive Fusion Research</h2>
+            <p>A disciplined research note where the investment thesis, operating model, valuation, and evidence requirements move together. Adapt the assumptions to a company; keep the logic and the audit trail intact.</p>
+          </header>
+
+          <section class="report-section">
+            <p class="section-index">01 / Executive Summary</p>
+            <h2>Executive Summary</h2>
+            <p><span data-bind="companyName"></span> trades at <span data-bind="currentPrice" data-format="price"></span>. In the active scenario, the model underwrites <span data-bind="revenue2026" data-format="billions"></span> of 2026E revenue and <span data-bind="revenue2027" data-format="billions"></span> of 2027E revenue, with EBITDA margin expanding to <span data-bind="ebitdaMargin" data-format="percent"></span>. That supports a risk-adjusted value of <span data-bind="targetPrice" data-format="price"></span> per share, or <span data-bind="upside" data-format="signed-percent"></span> versus spot.</p>
+            <p>The purpose of the report is not to disguise assumptions as facts. It makes the assumptions visible, keeps the underlying maths live, and records the primary evidence still needed to validate the investment case. <span class="citation">[MODEL / LOCAL]</span></p>
+            <div class="insight">“The best research is a chain of claims where each link can be inspected, challenged, and recalculated.”<small>Fusion Research operating principle</small></div>
+          </section>
+
+          <section class="report-section" id="operating">
+            <p class="section-index">02 / Operating Model</p>
+            <h2>Growth, margin, and cash conversion</h2>
+            <p>The central underwriting question is whether revenue can grow from <span data-bind="revenue2025" data-format="billions"></span> in 2025A to <span data-bind="revenue2027" data-format="billions"></span> by 2027E while protecting a <span data-bind="ebitdaMargin" data-format="percent"></span> EBITDA margin. The model turns those inputs into <span data-bind="ebitda2027" data-format="billions"></span> of EBITDA and <span data-bind="fcf2027" data-format="billions"></span> of free cash flow. <span class="citation">[ASSUMPTION SET / <span data-bind="scenarioName"></span>]</span></p>
+            <div class="module">
+              <div class="module-head"><div><h3>Issuer and capital base</h3><p>Set the company-specific facts before working the scenarios. These values are not reset by Bear, Base, or Bull.</p></div><span class="module-tag">Editable</span></div>
+              <div class="issuer-inputs">
+                <div class="control-deck">
+                  <h4>Equity inputs</h4>
+                  <div class="control"><div class="control-top"><label for="currentPrice">Current share price</label><output data-bind="currentPrice" data-format="price"></output></div><div class="control-row"><input id="currentPrice" type="range" min=".01" max="10000" step=".01" data-key="currentPrice" /><input type="number" min=".01" max="10000" step=".01" data-key="currentPrice" aria-label="Current share price in US dollars" /></div></div>
+                  <div class="control"><div class="control-top"><label for="basicShares">Basic shares</label><output data-bind="basicShares" data-format="millions"></output></div><div class="control-row"><input id="basicShares" type="range" min="1" max="10000" step="1" data-key="basicShares" /><input type="number" min="1" max="10000" step="1" data-key="basicShares" aria-label="Basic shares in millions" /></div></div>
+                  <div class="control"><div class="control-top"><label for="dilution">Dilution</label><output data-bind="dilution" data-format="percent"></output></div><div class="control-row"><input id="dilution" type="range" min="0" max="100" step=".5" data-key="dilution" /><input type="number" min="0" max="100" step=".5" data-key="dilution" aria-label="Dilution percentage" /></div></div>
+                </div>
+                <div class="control-deck">
+                  <h4>Balance sheet and DCF</h4>
+                  <div class="control"><div class="control-top"><label for="netCash">Net cash / (debt)</label><output data-bind="netCash" data-format="billions"></output></div><div class="control-row"><input id="netCash" type="range" min="-50" max="100" step=".05" data-key="netCash" /><input type="number" min="-50" max="100" step=".05" data-key="netCash" aria-label="Net cash or net debt in billions of US dollars" /></div></div>
+                  <div class="control"><div class="control-top"><label for="revenue2025">2025A revenue</label><output data-bind="revenue2025" data-format="billions"></output></div><div class="control-row"><input id="revenue2025" type="range" min=".01" max="50" step=".05" data-key="revenue2025" /><input type="number" min=".01" max="50" step=".05" data-key="revenue2025" aria-label="2025 actual revenue in billions of US dollars" /></div></div>
+                  <div class="control"><div class="control-top"><label for="terminalGrowth">Terminal growth</label><output data-bind="terminalGrowth" data-format="percent"></output></div><div class="control-row"><input id="terminalGrowth" type="range" min="0" max="6" step=".1" data-key="terminalGrowth" /><input type="number" min="0" max="6" step=".1" data-key="terminalGrowth" aria-label="DCF terminal growth percentage" /></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="module">
+              <div class="module-head"><div><h3>Operating drivers</h3><p>Inputs are local and update the document in real time.</p></div><span class="module-tag">Editable</span></div>
+              <div class="driver-module">
+                <div class="control-deck">
+                  <h4>Forecast inputs</h4>
+                  <div class="control"><div class="control-top"><label for="revenue2026">2026E revenue</label><output data-bind="revenue2026" data-format="billions"></output></div><div class="control-row"><input id="revenue2026" type="range" min=".1" max="20" step=".05" data-key="revenue2026" /><input type="number" min=".1" max="20" step=".05" data-key="revenue2026" aria-label="2026 revenue in billions" /></div></div>
+                  <div class="control"><div class="control-top"><label for="revenue2027">2027E revenue</label><output data-bind="revenue2027" data-format="billions"></output></div><div class="control-row"><input id="revenue2027" type="range" min=".1" max="30" step=".05" data-key="revenue2027" /><input type="number" min=".1" max="30" step=".05" data-key="revenue2027" aria-label="2027 revenue in billions" /></div></div>
+                  <div class="control"><div class="control-top"><label for="ebitdaMargin">2027E EBITDA margin</label><output data-bind="ebitdaMargin" data-format="percent"></output></div><div class="control-row"><input id="ebitdaMargin" type="range" min="-10" max="70" step="1" data-key="ebitdaMargin" /><input type="number" min="-10" max="70" step="1" data-key="ebitdaMargin" aria-label="2027 EBITDA margin percentage" /></div></div>
+                  <div class="control"><div class="control-top"><label for="fcfConversion">EBITDA to FCF conversion</label><output data-bind="fcfConversion" data-format="percent"></output></div><div class="control-row"><input id="fcfConversion" type="range" min="10" max="100" step="1" data-key="fcfConversion" /><input type="number" min="10" max="100" step="1" data-key="fcfConversion" aria-label="Free cash flow conversion percentage" /></div></div>
+                </div>
+                <div class="chart-space">
+                  <div class="legend"><span><i style="background:var(--blue)"></i>Revenue</span><span><i style="background:var(--lime)"></i>EBITDA</span><span><i style="background:var(--amber)"></i>FCF</span></div>
+                  <svg class="trajectory" id="trajectory-chart" viewBox="0 0 590 220" role="img" aria-label="Revenue, EBITDA, and free cash flow trajectory"></svg>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="report-section" id="architecture">
+            <p class="section-index">03 / Revenue Architecture</p>
+            <h2>What has to be true</h2>
+            <p>A reusable research model should describe the economic engine before it applies a multiple. The four layers below are deliberately sector-agnostic: replace their descriptions with sourced company-specific evidence and keep the translation into revenue, margin, and cash conversion explicit.</p>
+            <div class="architecture">
+              <div class="stack-list" aria-label="Revenue architecture layers">
+                <div class="stack-row"><b class="num">01</b><div><strong>Demand formation</strong><span>End-market growth, customer urgency, and budget durability.</span></div><b>THESIS</b></div>
+                <div class="stack-row"><b class="num">02</b><div><strong>Volume / penetration</strong><span>Seats, units, capacity, users, or share — the physical growth bridge.</span></div><b>MODEL</b></div>
+                <div class="stack-row"><b class="num">03</b><div><strong>Price / mix</strong><span>Pricing power, monetisation, expansion, and mix migration.</span></div><b>MODEL</b></div>
+                <div class="stack-row"><b class="num">04</b><div><strong>Conversion to cash</strong><span>Gross margin, operating leverage, capital intensity, and working capital.</span></div><b>VALUE</b></div>
+              </div>
+              <aside class="evidence-card">
+                <h4>Evidence to collect</h4>
+                <div class="evidence-row"><strong>Primary filings</strong><span>Annual report, quarterly release, and management guidance. <em>Required</em></span></div>
+                <div class="evidence-row"><strong>Operating proof points</strong><span>KPIs that explain volume, price, mix, and retention. <em>Required</em></span></div>
+                <div class="evidence-row"><strong>External validation</strong><span>Customer interviews, industry data, and competitor disclosures. <em>Optional</em></span></div>
+              </aside>
+            </div>
+          </section>
+
+          <section class="report-section" id="valuation">
+            <p class="section-index">04 / Valuation Engine</p>
+            <h2>Multi-method valuation, one transparent target</h2>
+            <p>The target price is a weighted cross-check, not an authoritative output. EV / Revenue frames the growth franchise, EV / EBITDA anchors earnings power, and DCF exposes the cash-flow duration. A user-controlled risk haircut then prevents the presentation of a false point estimate.</p>
+            <div class="module">
+              <div class="module-head"><div><h3>Valuation methods</h3><p>Choose a method to see its live inputs and share-price output.</p></div><span class="module-tag">Cross-check</span></div>
+              <div class="method-tabs" role="tablist" aria-label="Valuation methods"><button class="active" data-method="revenue" role="tab">EV / Revenue</button><button data-method="ebitda" role="tab">EV / EBITDA</button><button data-method="dcf" role="tab">DCF</button></div>
+              <div class="method-body" id="method-body"></div>
+            </div>
+            <div class="module" style="margin-top:16px">
+              <div class="module-head"><div><h3>Valuation controls</h3><p>The selected assumptions flow through every report module.</p></div></div>
+              <div class="driver-module">
+                <div class="control-deck">
+                  <div class="control"><div class="control-top"><label for="evRevenue">2027E EV / Revenue</label><output data-bind="evRevenue" data-format="multiple"></output></div><div class="control-row"><input id="evRevenue" type="range" min="1" max="25" step=".1" data-key="evRevenue" /><input type="number" min="1" max="25" step=".1" data-key="evRevenue" aria-label="2027 enterprise value to revenue multiple" /></div></div>
+                  <div class="control"><div class="control-top"><label for="evEbitda">2027E EV / EBITDA</label><output data-bind="evEbitda" data-format="multiple"></output></div><div class="control-row"><input id="evEbitda" type="range" min="1" max="45" step=".5" data-key="evEbitda" /><input type="number" min="1" max="45" step=".5" data-key="evEbitda" aria-label="2027 enterprise value to EBITDA multiple" /></div></div>
+                  <div class="control"><div class="control-top"><label for="wacc">WACC</label><output data-bind="wacc" data-format="percent"></output></div><div class="control-row"><input id="wacc" type="range" min="5" max="25" step=".1" data-key="wacc" /><input type="number" min="5" max="25" step=".1" data-key="wacc" aria-label="Weighted average cost of capital percentage" /></div></div>
+                  <div class="control"><div class="control-top"><label for="riskHaircut">Risk haircut</label><output data-bind="riskHaircut" data-format="percent"></output></div><div class="control-row"><input id="riskHaircut" type="range" min="0" max="65" step="1" data-key="riskHaircut" /><input type="number" min="0" max="65" step="1" data-key="riskHaircut" aria-label="Risk haircut percentage" /></div></div>
+                </div>
+                <div class="chart-space"><p style="margin:0 0 14px;color:var(--text-mid);font-size:12px;line-height:1.65">At <span data-bind="evRevenue" data-format="multiple"></span> 2027E EV / Revenue and <span data-bind="evEbitda" data-format="multiple"></span> EV / EBITDA, the unadjusted blend is <span data-bind="rawTarget" data-format="price"></span>. Applying a <span data-bind="totalHaircut" data-format="percent"></span> scenario adjustment results in <span data-bind="targetPrice" data-format="price"></span>.</p><div class="result-card"><span>Risk-adjusted target</span><strong data-bind="targetPrice" data-format="price"></strong><p><span data-bind="upside" data-format="signed-percent"></span> vs. current price · fully diluted shares: <span data-bind="fdShares" data-format="millions"></span></p></div></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="report-section" id="analysis">
+            <p class="section-index">05 / Scenario Analysis</p>
+            <h2>What moves the equity value</h2>
+            <p>These outputs are intentionally compact: they make it obvious which model assumptions are carrying the conclusion. Change the scenario above or edit the model in context; the matrix and bridge recompute instantly.</p>
+            <div class="analysis-grid">
+              <div class="module sensitivity"><div class="sensitivity-head"><h3>Sensitivity matrix</h3><span>2027E revenue × EV / Revenue</span></div><div class="matrix-wrap"><table class="matrix" id="sensitivity-matrix" aria-label="Sensitivity matrix"></table></div></div>
+              <div class="module bridge"><div class="bridge-head"><h3>Price bridge</h3><span>USD / share</span></div><svg class="bridge-chart" id="bridge-chart" viewBox="0 0 410 230" role="img" aria-label="Valuation bridge"></svg></div>
+            </div>
+          </section>
+
+          <section class="report-section" id="evidence">
+            <p class="section-index">06 / Research Pack</p>
+            <h2>Hand the model to AI without losing the audit trail</h2>
+            <p>The report does not send data to a provider. Instead, it produces a brief that carries the live assumption set and forces the next research step to distinguish primary evidence from inference.</p>
+            <div class="research-pack">
+              <aside class="source-ledger"><h3>Research ledger</h3><p>Use this as a check before treating any conclusion as decision-ready.</p><div class="source-status"><i></i><span>Assumptions normalised</span><b>LOCAL</b></div><div class="source-status"><i></i><span>Valuation resolved</span><b>LIVE</b></div><div class="source-status"><i class="pending"></i><span>Primary source packet</span><b>ADD</b></div><div class="source-status"><i class="pending"></i><span>Claim-to-source ledger</span><b>ADD</b></div></aside>
+              <div class="brief"><h3>AI research brief</h3><textarea id="handoff-text" aria-label="AI research brief" readonly></textarea><div class="brief-actions"><button class="utility" id="copy-brief">Copy brief</button><button class="utility" id="download-brief">Download .md</button></div></div>
+            </div>
+          </section>
+        </article>
+      </div>
+    </main>
+    <footer class="shell footer">Fusion Research is an offline modelling template. It is not investment advice. Validate every assumption against dated primary sources before relying on an output.</footer>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script>
+      (() => {
+        "use strict";
+        const baseState = Object.freeze({ companyName: "Northstar Systems (NSTR)", currentPrice: 48, basicShares: 375, dilution: 8, netCash: .42, revenue2025: 1.18, revenue2026: 1.64, revenue2027: 2.15, ebitdaMargin: 22, fcfConversion: 58, evRevenue: 7.4, evEbitda: 21, wacc: 10.5, terminalGrowth: 3, riskHaircut: 18 });
+        const scenarioKeys = ["revenue2026", "revenue2027", "ebitdaMargin", "fcfConversion", "evRevenue", "evEbitda", "wacc", "terminalGrowth", "riskHaircut"];
+        const scenarioKeySet = new Set(scenarioKeys);
+        const baseScenario = Object.fromEntries(scenarioKeys.map(key => [key, baseState[key]]));
+        const scenarios = {
+          bear: { revenue2026: 1.32, revenue2027: 1.58, ebitdaMargin: 15, fcfConversion: 46, evRevenue: 5.1, evEbitda: 15, wacc: 12.5, terminalGrowth: 2.5, riskHaircut: 31 },
+          base: baseScenario,
+          bull: { revenue2026: 1.98, revenue2027: 2.82, ebitdaMargin: 30, fcfConversion: 68, evRevenue: 10.1, evEbitda: 28, wacc: 9, terminalGrowth: 3.5, riskHaircut: 10 }
+        };
+        let state = { ...baseState };
+        let calculated = {};
+        let activeScenario = "base";
+        let activeMethod = "revenue";
+        let toastTimer;
+        const storageNamespace = "fusion-research:v2";
+        const lastSavedModelKey = `${storageNamespace}:last-saved-model`;
+        const $ = (selector, root = document) => root.querySelector(selector);
+        const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+        const number = value => Number.isFinite(Number(value)) ? Number(value) : 0;
+        const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+        const money = value => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(number(value));
+        const format = (value, type = "number") => {
+          const n = number(value);
+          if (type === "price") return money(n);
+          if (type === "billions") return `$${n.toFixed(n >= 10 ? 1 : 2)}B`;
+          if (type === "millions") return `${n.toFixed(1)}M`;
+          if (type === "percent") return `${n.toFixed(1)}%`;
+          if (type === "signed-percent") return `${n >= 0 ? "+" : ""}${n.toFixed(1)}%`;
+          if (type === "multiple") return `${n.toFixed(1)}×`;
+          return n.toLocaleString("en-US", { maximumFractionDigits: 2 });
+        };
+        // `calculate()` derives the fully diluted share count before it replaces
+        // `calculated`; keep this helper explicit so every valuation is numeric
+        // on the first render as well as after an input change.
+        const perShare = (enterpriseValue, fdShares) => (enterpriseValue + state.netCash) * 1000 / fdShares;
+        function calculate() {
+          const fdShares = Math.max(1, state.basicShares * (1 + state.dilution / 100));
+          const margin27 = state.ebitdaMargin / 100;
+          const margin26 = Math.max(-.1, margin27 - .045);
+          const margin28 = Math.min(.72, margin27 + .045);
+          const ebitda2026 = state.revenue2026 * margin26;
+          const ebitda2027 = state.revenue2027 * margin27;
+          const revenue2028 = state.revenue2027 * 1.26;
+          const ebitda2028 = revenue2028 * margin28;
+          const fcf2026 = ebitda2026 * state.fcfConversion / 100;
+          const fcf2027 = ebitda2027 * state.fcfConversion / 100;
+          const fcf2028 = ebitda2028 * Math.min(.9, state.fcfConversion / 100 + .05);
+          const forecast = [fcf2027, fcf2028, revenue2028 * 1.22 * Math.min(.76, margin28 + .035) * Math.min(.92, state.fcfConversion / 100 + .09), revenue2028 * 1.47 * Math.min(.79, margin28 + .06) * Math.min(.95, state.fcfConversion / 100 + .12)];
+          const wacc = Math.max((state.terminalGrowth + .5) / 100, state.wacc / 100);
+          const terminalGrowth = state.terminalGrowth / 100;
+          const dcfEV = forecast.reduce((sum, value, index) => sum + value / Math.pow(1 + wacc, index + 1), 0) + forecast[3] * (1 + terminalGrowth) / (wacc - terminalGrowth) / Math.pow(1 + wacc, 4);
+          const revenueTarget = perShare(state.revenue2027 * state.evRevenue, fdShares);
+          const ebitdaTarget = perShare(ebitda2027 * state.evEbitda, fdShares);
+          const dcfTarget = perShare(dcfEV, fdShares);
+          const rawTarget = revenueTarget * .42 + ebitdaTarget * .25 + dcfTarget * .33;
+          const totalHaircut = clamp(state.riskHaircut, 0, 90);
+          const targetPrice = rawTarget * (1 - totalHaircut / 100);
+          calculated = { fdShares, marketCap: state.currentPrice * fdShares / 1000, ebitda2026, ebitda2027, ebitda2028, revenue2028, fcf2026, fcf2027, fcf2028, revenueTarget, ebitdaTarget, dcfTarget, dcfEV, rawTarget, totalHaircut, targetPrice, upside: (targetPrice / Math.max(.01, state.currentPrice) - 1) * 100, forecast };
+        }
+        function renderBindings() {
+          $$('[data-bind]').forEach(node => {
+            const key = node.dataset.bind;
+            const value = key === "scenarioName" ? activeScenario.toUpperCase() : (Object.hasOwn(state, key) ? state[key] : calculated[key]);
+            node.textContent = (key === "companyName" || key === "scenarioName") ? value : format(value, node.dataset.format);
+          });
+          $$('[data-key]').forEach(input => { if (document.activeElement !== input) input.value = Number(state[input.dataset.key].toFixed(4)); });
+          $$('[data-text-key]').forEach(input => { if (document.activeElement !== input) input.value = state[input.dataset.textKey]; });
+          $('#handoff-text').value = buildBrief();
+        }
+        function renderScenario() { $$('[data-scenario]').forEach(button => button.classList.toggle("active", button.dataset.scenario === activeScenario)); }
+        function renderTrajectory() {
+          const svg = $('#trajectory-chart');
+          const years = ["2025A", "2026E", "2027E", "2028E", "2029E"];
+          const revenue = [state.revenue2025, state.revenue2026, state.revenue2027, calculated.revenue2028, calculated.revenue2028 * 1.22];
+          const ebitda = [state.revenue2025 * Math.max(0, state.ebitdaMargin / 100 - .09), calculated.ebitda2026, calculated.ebitda2027, calculated.ebitda2028, calculated.revenue2028 * 1.22 * Math.min(.76, state.ebitdaMargin / 100 + .08)];
+          const fcf = [ebitda[0] * Math.max(.25, state.fcfConversion / 100 - .14), calculated.fcf2026, calculated.fcf2027, calculated.fcf2028, calculated.forecast[2]];
+          const max = Math.max(...revenue, 1) * 1.14, x = index => 53 + index * 126, y = value => 173 - value / max * 132;
+          const line = values => values.map((value, index) => `${index ? "L" : "M"}${x(index)} ${y(value)}`).join(" ");
+          const dots = (values, cls) => values.map((value, index) => `<circle class="${cls}" cx="${x(index)}" cy="${y(value)}" r="4"><title>${years[index]}: ${format(value, "billions")}</title></circle>`).join("");
+          svg.innerHTML = `<line class="grid" x1="52" x2="560" y1="41" y2="41"/><line class="grid" x1="52" x2="560" y1="107" y2="107"/><line class="grid" x1="52" x2="560" y1="173" y2="173"/><text x="6" y="44">${format(max, "billions")}</text><text x="26" y="176">$0</text><path class="revenue" d="${line(revenue)}"/><path class="ebitda" d="${line(ebitda)}"/><path d="${line(fcf)}" fill="none" stroke="var(--amber)" stroke-width="2" stroke-dasharray="4 4"/>${dots(revenue, "dot-revenue")}${dots(ebitda, "dot-ebitda")}${years.map((year, index) => `<text x="${x(index)}" y="204" text-anchor="middle">${year}</text>`).join("")}`;
+        }
+        function renderMethod() {
+          const copy = {
+            revenue: { title: "EV / Revenue", output: calculated.revenueTarget, description: `The revenue method applies ${format(state.evRevenue, "multiple")} to ${format(state.revenue2027, "billions")} of 2027E revenue, then adds ${format(state.netCash, "billions")} of net cash.` },
+            ebitda: { title: "EV / EBITDA", output: calculated.ebitdaTarget, description: `The earnings method applies ${format(state.evEbitda, "multiple")} to ${format(calculated.ebitda2027, "billions")} of 2027E EBITDA. It is most useful when operating leverage is credible.` },
+            dcf: { title: "DCF", output: calculated.dcfTarget, description: `The DCF discounts forecast free cash flow at ${format(state.wacc, "percent")} WACC with ${format(state.terminalGrowth, "percent")} terminal growth. The terminal spread is safeguarded.` }
+          }[activeMethod];
+          $('#method-body').innerHTML = `<div><h4>${copy.title}</h4><p>${copy.description}</p></div><div class="result-card"><span>Implied value / share</span><strong>${format(copy.output, "price")}</strong><p>Before the blended weighting and risk haircut.</p></div>`;
+          $$('[data-method]').forEach(button => button.classList.toggle("active", button.dataset.method === activeMethod));
+        }
+        function renderSensitivity() {
+          const revenueFactors = [.72, .84, .96, 1.04, 1.16, 1.28], multipleFactors = [.7, .82, .94, 1.06, 1.18, 1.3];
+          const price = (revenue, multiple) => ((revenue * multiple + state.netCash) * 1000 / calculated.fdShares) * (1 - calculated.totalHaircut / 100);
+          const values = multipleFactors.flatMap(m => revenueFactors.map(r => price(state.revenue2027 * r, state.evRevenue * m)));
+          const min = Math.min(...values), max = Math.max(...values), color = value => `hsl(${5 + (value - min) / Math.max(.01, max - min) * 92} 72% ${25 + (value - min) / Math.max(.01, max - min) * 42}%)`;
+          let html = `<thead><tr><th>REV / MULT</th>${revenueFactors.map(f => `<th>${format(state.revenue2027 * f, "billions")}</th>`).join("")}</tr></thead><tbody>`;
+          multipleFactors.forEach(m => { html += `<tr><td class="row-head">${format(state.evRevenue * m, "multiple")}</td>`; revenueFactors.forEach(r => { const value = price(state.revenue2027 * r, state.evRevenue * m); html += `<td style="background:${color(value)}">${format(value, "price")}</td>`; }); html += "</tr>"; });
+          $('#sensitivity-matrix').innerHTML = html + "</tbody>";
+        }
+        function renderBridge() {
+          const svg = $('#bridge-chart'), data = [{ label: "Net cash", value: state.netCash * 1000 / calculated.fdShares, color: "#60758a" }, { label: "EV / Rev", value: calculated.revenueTarget, color: "#60a5fa" }, { label: "EV / EBITDA", value: calculated.ebitdaTarget, color: "#c8f420" }, { label: "DCF", value: calculated.dcfTarget, color: "#c084fc" }, { label: "Target", value: calculated.targetPrice, color: "#9bc418" }], max = Math.max(...data.map(d => d.value)) * 1.2, base = 180;
+          let html = `<line class="axis" x1="20" x2="392" y1="${base}" y2="${base}"/><text x="22" y="20">per share</text>`;
+          data.forEach((item, index) => { const x = 24 + index * 75, h = Math.max(3, item.value / max * 132); html += `<rect x="${x}" y="${base - h}" width="43" height="${h}" rx="3" fill="${item.color}"/><text class="value" x="${x + 21}" y="${base - h - 7}" text-anchor="middle">${format(item.value, "price")}</text><text class="label" x="${x + 21}" y="198" text-anchor="middle">${item.label}</text>`; });
+          svg.innerHTML = html;
+        }
+        function buildBrief() { return `Create a Financial Fusion Research report for ${state.companyName}.
+
+MODEL SNAPSHOT
+- Current price: ${format(state.currentPrice, "price")}; fully diluted shares: ${format(calculated.fdShares, "millions")}; net cash: ${format(state.netCash, "billions")}
+- Revenue: ${format(state.revenue2025, "billions")} in 2025A, ${format(state.revenue2026, "billions")} in 2026E, ${format(state.revenue2027, "billions")} in 2027E
+- 2027E EBITDA margin: ${format(state.ebitdaMargin, "percent")}; FCF conversion: ${format(state.fcfConversion, "percent")}
+- Valuation: ${format(state.evRevenue, "multiple")} EV/Revenue, ${format(state.evEbitda, "multiple")} EV/EBITDA, ${format(state.wacc, "percent")} WACC, ${format(state.terminalGrowth, "percent")} terminal growth
+- Risk haircut: ${format(calculated.totalHaircut, "percent")}; target: ${format(calculated.targetPrice, "price")}; upside: ${format(calculated.upside, "signed-percent")}
+
+INSTRUCTIONS
+1. Use only the supplied primary-source packet for facts. Label anything else as an assumption or open question.
+2. Recompute all arithmetic, preserve $B / $M / USD-per-share units, and flag inconsistencies rather than silently fixing them.
+3. Write a concise memo: executive summary, operating model, revenue architecture, margins/cash, valuation cross-check, risks/catalysts, and a claim-to-source ledger.
+4. Do not invent citations, figures, quotes, or investment advice. List missing source documents explicitly.`; }
+        function render() { calculate(); renderBindings(); renderScenario(); renderTrajectory(); renderMethod(); renderSensitivity(); renderBridge(); }
+        function showToast(message) { const toast = $('#toast'); toast.textContent = message; toast.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.classList.remove("show"), 2900); }
+        function storageKey(name = state.companyName) { return `${storageNamespace}:model:${String(name).toLowerCase().replace(/[^a-z0-9]+/g, "-")}`; }
+        function normaliseState(candidate) {
+          const next = { ...state };
+          Object.keys(baseState).forEach(key => {
+            if (key === "companyName" && typeof candidate[key] === "string" && candidate[key].trim()) next[key] = candidate[key].trim();
+            if (key !== "companyName" && Number.isFinite(Number(candidate[key]))) next[key] = Number(candidate[key]);
+          });
+          return next;
+        }
+        function restoreSavedModel() {
+          const requestedKey = storageKey();
+          const preferredKey = localStorage.getItem(lastSavedModelKey);
+          const keys = [...new Set([requestedKey, preferredKey].filter(Boolean))];
+          for (const key of keys) {
+            try {
+              const parsed = JSON.parse(localStorage.getItem(key) || "null");
+              if (!parsed || typeof parsed !== "object") continue;
+              const record = parsed.state && typeof parsed.state === "object" ? parsed : { state: parsed, activeScenario: "custom" };
+              state = normaliseState(record.state);
+              activeScenario = ["bear", "base", "bull", "custom"].includes(record.activeScenario) ? record.activeScenario : "custom";
+              return true;
+            } catch { /* try the next saved record */ }
+          }
+          return false;
+        }
+        function download(name, content, type) { const link = document.createElement("a"), url = URL.createObjectURL(new Blob([content], { type })); link.href = url; link.download = name; document.body.append(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 500); }
+        function exportCsv() { const rows = [["field", "value"], ...Object.entries({ ...state, ...calculated }).filter(([, value]) => typeof value !== "object").map(([key, value]) => [key, value])]; download("fusion-research-model.csv", rows.map(row => row.map(value => `"${String(value).replaceAll('"', '""')}"`).join(",")).join("\n"), "text/csv;charset=utf-8"); showToast("Live model exported as CSV."); }
+        function applyScenario(name) { activeScenario = name; state = { ...state, ...scenarios[name] }; render(); showToast(`${name[0].toUpperCase()} scenario applied.`); }
+        function updateNumericInput(input) {
+          if (input.value.trim() === "") return;
+          const raw = Number(input.value);
+          if (!Number.isFinite(raw)) return;
+          const min = input.min === "" ? -Infinity : Number(input.min);
+          const max = input.max === "" ? Infinity : Number(input.max);
+          state[input.dataset.key] = clamp(raw, min, max);
+          if (scenarioKeySet.has(input.dataset.key)) activeScenario = "custom";
+          render();
+        }
+        $$('[data-key]').forEach(input => input.addEventListener("input", event => updateNumericInput(event.currentTarget)));
+        $$('[data-text-key]').forEach(input => input.addEventListener("input", event => { state[event.currentTarget.dataset.textKey] = event.currentTarget.value; render(); }));
+        $$('[data-scenario]').forEach(button => button.addEventListener("click", () => applyScenario(button.dataset.scenario)));
+        $$('[data-method]').forEach(button => button.addEventListener("click", () => { activeMethod = button.dataset.method; renderMethod(); }));
+        $('#save-model').addEventListener("click", () => { try { const key = storageKey(); localStorage.setItem(key, JSON.stringify({ version: 2, state, activeScenario })); localStorage.setItem(lastSavedModelKey, key); showToast("Model saved in this browser only."); } catch { showToast("Model could not be saved in this browser."); } });
+        $('#load-model').addEventListener("click", () => { if (!restoreSavedModel()) { showToast("No saved model found in this browser."); return; } render(); showToast("Saved model loaded from this browser."); });
+        $('#export-csv').addEventListener("click", exportCsv);
+        $('#copy-brief').addEventListener("click", async () => { try { await navigator.clipboard.writeText(buildBrief()); showToast("Research brief copied."); } catch { const area = $('#handoff-text'); area.focus(); area.select(); document.execCommand("copy"); showToast("Research brief copied."); } });
+        $('#download-brief').addEventListener("click", () => { download("fusion-research-brief.md", buildBrief(), "text/markdown"); showToast("Research brief downloaded."); });
+        render();
+      })();
+    </script>
+  </body>
+</html>
