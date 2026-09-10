@@ -90,6 +90,13 @@ For manual acceptance testing, confirm that every editable field updates the rel
 - Browser persistence is namespaced by company name and remains local to the browser profile.
 - Export actions create local files through the browser’s download mechanism only.
 
+---
+🆕 **COMING SOON: MACRO POLITICAL AND TECHNOLOGY SECTOR INTEGRATION**
+
+As Dylan Patel said in April: _"People are going to get more and more scared of AI. Probably some politician or some social media people will start to be able to weaponise AI against people"_ ([source](https://youtu.be/LF3aUIM57uw?t=2515)). Months later, New York City implemented a [data centre moratorium](https://www.reuters.com/world/new-york-becomes-first-state-impose-data-centre-moratorium-2026-07-14/). But number-wise: Data centres [drove 1.4% of total US GDP](https://epoch.ai/data-insights/ai-datacenter-share-gdp), monthly capex generated [$58B+ in physical construction](https://www.datacentercoalition.org/reports-and-publications) starts, hardware imports caused an export drag but [AI tech infrastructure investment hugely carried](https://www.federalreserve.gov/econres/notes/feds-notes/the-ai-buildout-and-the-economy-publicly-available-data-to-assess-ais-impact-20260717.html) the quarterly growth nationwide.
+
+---
+
 ## License
 
 MIT. See [`LICENSE`](LICENSE).
