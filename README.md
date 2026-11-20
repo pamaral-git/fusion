@@ -1,4 +1,4 @@
-# Fusion Research
+# Fusion | [Main](https://pamaral-git.github.io/fusion/) ◦ [2027 Outlook](https://pamaral-git.github.io/fusion/Pages/2027-Outlooks.html) 
 
 An offline-first, browser-based interactive equity-research report. It turns a company’s operating assumptions into a living investment memo, with the narrative, valuation, charts, scenarios, and AI research brief all driven by one transparent local model.
 

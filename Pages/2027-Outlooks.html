@@ -1,0 +1,2369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="artifact-type" content="dashboard">
+  <meta name="design-style" content="briefing">
+  <title>2027 Institutional Investment Outlooks — Comparative Briefing</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/lucide@1.43.0/dist/umd/lucide.min.js"></script>
+  <style>
+    :root {
+      color-scheme: light;
+
+      /* Page and surfaces: warm stone-white paper */
+      --background: #faf9f5;
+      --surface-container-low: #ffffff;
+      --surface-container: #f1efe8;
+      --surface-container-high: #e6e2d6;
+
+      /* Ink */
+      --on-surface: #17181a;
+      --on-surface-variant: #56585c;
+
+      /* Rules */
+      --outline: #17181a;
+      --outline-variant: #dedad0;
+
+      /* Accents */
+      --primary: #17181a;
+      --on-primary: #faf9f5;
+      --primary-container: #f2b705;
+      --on-primary-container: #17181a;
+      --secondary: #1f4e5f;
+      --tertiary: #785008;
+      --error: #b42318;
+      --on-error: #ffffff;
+
+      /* Data series, in order of use */
+      --data-1: #1f4e5f;
+      --data-2: #d99000;
+      --data-3: #2b6e52;
+      --data-4: #b84a39;
+      --data-context: #c4bfb2;
+
+      /* Semantic & tinted surfaces */
+      --positive: #2b6e52;
+      --warning: #785008;
+      --focus: #1f4e5f;
+      --tag-amber-bg: #f5e6c4;
+      --tag-pine-bg: #e5f0eb;
+      --tag-slate-bg: #e5eef2;
+      --tag-brick-bg: #f8e8e6;
+      --border-muted: #c8c4b8;
+
+      /* Fonts */
+      --font-headline: 'Source Serif 4', serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --font-label: 'Geist Mono', monospace;
+
+      /* Dashboard / Data Explorer type scale */
+      --display-size: clamp(1.75rem, 1.4rem + 1.2vw, 2.35rem);
+      --headline-size: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
+      --subhead-size: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
+      --body-size: clamp(0.9375rem, 0.9rem + 0.15vw, 1rem);
+      --label-size: 0.75rem;
+
+      /* Shape */
+      --rounded: 0.25rem;
+      --rounded-lg: 0.375rem;
+      --rounded-full: 0.25rem;
+
+      /* Style effects */
+      --section-rule: 1.5px solid var(--outline);
+      --card-border: 1px solid var(--outline-variant);
+      --badge-radius: 2px;
+      --heading-tracking: -0.02em;
+      --label-tracking: 0.08em;
+
+      /* Spacing scale (4pt base) */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2.5rem;
+      --space-2xl: 4rem;
+      --space-3xl: 6rem;
+
+      /* Motion */
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+      --dur-micro: 120ms;
+      --dur-short: 220ms;
+      --dur-long: 420ms;
+    }
+
+    /* Base reset */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      overflow-x: clip;
+      margin: 0;
+      padding: 0;
+      background-color: var(--background);
+      color: var(--on-surface);
+      font-family: var(--font-body);
+      font-size: var(--body-size);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+    header { position: static !important; }
+
+    .page-grid {
+      display: grid;
+      gap: var(--space-xl);
+      padding: var(--space-lg);
+      max-width: 1260px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+    .page-grid * { min-width: 0; }
+
+    /* Focus rings */
+    :focus-visible {
+      outline: 2.5px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    /* Typography */
+    h1, h2, h3, h4 {
+      font-family: var(--font-headline);
+      font-weight: 600;
+      letter-spacing: var(--heading-tracking);
+      color: var(--on-surface);
+      margin: 0;
+    }
+    p { margin: 0; }
+
+    .title {
+      font-size: var(--display-size);
+      line-height: 1.08;
+    }
+    .section-title {
+      font-size: var(--headline-size);
+      line-height: 1.15;
+    }
+    .card-title {
+      font-size: var(--subhead-size);
+      line-height: 1.25;
+    }
+    .standfirst {
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: var(--subhead-size);
+      color: var(--secondary);
+      margin-top: var(--space-sm);
+      max-width: 72ch;
+      line-height: 1.45;
+    }
+    .body-copy {
+      max-width: 68ch;
+      color: var(--on-surface);
+    }
+    .muted-copy {
+      color: var(--on-surface-variant);
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+
+    /* Dossier bars & badges */
+    .dossier-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-sm);
+      border-bottom: var(--section-rule);
+      padding-bottom: var(--space-sm);
+      margin-bottom: var(--space-md);
+    }
+    .dossier-bar-left {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    .dossier-pill {
+      background: var(--primary-container);
+      color: var(--on-primary-container);
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: 0.6875rem;
+      letter-spacing: var(--label-tracking);
+      text-transform: uppercase;
+      padding: 0.22rem 0.55rem;
+      border-radius: var(--badge-radius);
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+    .dossier-meta {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      color: var(--on-surface-variant);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .index-num {
+      font-family: var(--font-label);
+      font-weight: 600;
+      font-size: var(--label-size);
+      color: var(--secondary);
+      background: var(--surface-container);
+      padding: 0.15rem 0.4rem;
+      border-radius: var(--badge-radius);
+      letter-spacing: 0.04em;
+    }
+
+    /* Header & Jump Navigation */
+    .masthead {
+      display: grid;
+      gap: var(--space-md);
+    }
+    .masthead-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: var(--space-lg);
+    }
+    .jump-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      padding-top: var(--space-sm);
+      border-top: var(--card-border);
+    }
+    .jump-link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      min-height: 44px;
+      padding: 0 var(--space-md);
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--rounded);
+      color: var(--on-surface);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: background-color var(--dur-micro) var(--ease-out), border-color var(--dur-micro) var(--ease-out);
+    }
+    .jump-link:hover {
+      background: var(--surface-container);
+      border-color: var(--outline);
+    }
+
+    /* Cards and panels */
+    .figure-card {
+      background: var(--surface-container-low);
+      border: var(--card-border);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-md) var(--space-lg);
+    }
+    .figure-card .value {
+      font-family: var(--font-headline);
+      font-weight: 600;
+      font-variant-numeric: lining-nums tabular-nums;
+      font-size: clamp(1.5rem, 1.25rem + 0.8vw, 2rem);
+      line-height: 1.1;
+      color: var(--on-surface);
+    }
+    .aside-box {
+      background: var(--surface-container);
+      border-top: var(--section-rule);
+      border-radius: 0 0 var(--rounded-lg) var(--rounded-lg);
+      padding: var(--space-md) var(--space-lg);
+    }
+
+    /* KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+      gap: var(--space-md);
+    }
+    .kpi-card {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+    .kpi-label {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      color: var(--on-surface-variant);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+    .kpi-sub {
+      font-size: 0.8125rem;
+      color: var(--on-surface-variant);
+      margin-top: var(--space-xs);
+      line-height: 1.45;
+    }
+
+    /* Asymmetric 2-column sections */
+    .split-grid-8-4 {
+      display: grid;
+      grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
+      gap: var(--space-lg);
+      align-items: start;
+    }
+    .split-grid-5-7 {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+      gap: var(--space-lg);
+      align-items: start;
+    }
+
+    /* Buttons & Controls */
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      align-items: center;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-xs);
+      min-height: 44px;
+      padding: 0 var(--space-md);
+      border-radius: var(--rounded);
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      border: 1px solid var(--border-muted);
+      background: var(--surface-container-low);
+      color: var(--on-surface);
+      transition: background-color var(--dur-micro) var(--ease-out), color var(--dur-micro) var(--ease-out), box-shadow var(--dur-micro) var(--ease-out);
+    }
+    .btn:hover {
+      background: var(--surface-container);
+    }
+    .btn[aria-pressed="true"],
+    .btn.is-active {
+      background: var(--primary);
+      color: var(--on-primary);
+      border-color: var(--primary);
+    }
+    .btn-secondary-active[aria-pressed="true"],
+    .btn-secondary-active.is-active {
+      background: var(--secondary);
+      color: var(--on-primary);
+      border-color: var(--secondary);
+    }
+    .btn-compact {
+      min-height: 38px;
+      padding: 0 var(--space-sm);
+      font-size: 0.8125rem;
+    }
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    /* Form Controls (always-visible labels above inputs) */
+    .control-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-md);
+      align-items: end;
+      background: var(--surface-container);
+      border-top: var(--section-rule);
+      padding: var(--space-md);
+      border-radius: 0 0 var(--rounded-lg) var(--rounded-lg);
+    }
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+      min-width: 190px;
+      flex: 1 1 200px;
+    }
+    .field-label {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--on-surface);
+      font-weight: 500;
+    }
+    .text-input,
+    .select-input {
+      min-height: 44px;
+      padding: 0.5rem 0.75rem;
+      font-family: var(--font-body);
+      font-size: 0.9375rem;
+      color: var(--on-surface);
+      background: var(--surface-container-low);
+      border: 1px solid var(--border-muted);
+      border-radius: var(--rounded);
+      width: 100%;
+    }
+    .select-input {
+      padding-right: 2rem;
+    }
+
+    /* Tags & Stance Chips */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--rounded);
+      font-family: var(--font-label);
+      font-size: 0.72rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+    .tag-amber { background: var(--tag-amber-bg); color: var(--tertiary); }
+    .tag-pine { background: var(--tag-pine-bg); color: var(--positive); }
+    .tag-slate { background: var(--tag-slate-bg); color: var(--secondary); }
+    .tag-brick { background: var(--tag-brick-bg); color: var(--error); }
+    .tag-neutral { background: var(--surface-container); color: var(--on-surface-variant); }
+
+    /* Chart containers */
+    .chart-shell {
+      position: relative;
+      width: 100%;
+      min-height: 340px;
+      height: 360px;
+      margin-top: var(--space-md);
+    }
+    .chart-legend-note {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      color: var(--on-surface-variant);
+      margin-top: var(--space-sm);
+    }
+
+    /* Institution Directory Cards */
+    .card-wrapper { container-type: inline-size; }
+    .inst-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(250px, 100%), 1fr));
+      gap: var(--space-sm);
+    }
+    .inst-card {
+      background: var(--surface-container-low);
+      border: var(--card-border);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-md);
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+      width: 100%;
+      transition: background-color var(--dur-micro) var(--ease-out), box-shadow var(--dur-micro) var(--ease-out);
+    }
+    .inst-card:hover {
+      background: var(--surface-container);
+    }
+    .inst-card.is-selected {
+      background: var(--surface-container-low);
+      box-shadow: inset 3px 0 0 var(--primary-container), 0 0 0 1.5px var(--outline);
+    }
+    .inst-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-xs);
+      width: 100%;
+    }
+    .inst-name {
+      font-family: var(--font-headline);
+      font-weight: 600;
+      font-size: 1.0625rem;
+      color: var(--on-surface);
+    }
+    .inst-theme {
+      font-size: 0.84rem;
+      color: var(--on-surface-variant);
+      line-height: 1.4;
+    }
+    .inst-card-foot {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-xs);
+      margin-top: auto;
+      padding-top: var(--space-xs);
+    }
+
+    /* Detail Briefing Pane */
+    .detail-pane {
+      display: grid;
+      gap: var(--space-md);
+    }
+    .detail-section-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+      gap: var(--space-md);
+    }
+    .detail-block {
+      background: var(--background);
+      border: var(--card-border);
+      border-radius: var(--rounded);
+      padding: var(--space-sm) var(--space-md);
+    }
+    .detail-block-title {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--secondary);
+      margin-bottom: var(--space-xs);
+      font-weight: 600;
+    }
+    .detail-list {
+      margin: 0;
+      padding-left: 1.1rem;
+      display: grid;
+      gap: var(--space-xs);
+      font-size: 0.9rem;
+    }
+
+    /* Head-to-Head Compare Matrix */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+      gap: var(--space-md);
+      margin-top: var(--space-md);
+    }
+    .compare-col {
+      background: var(--surface-container-low);
+      border: var(--card-border);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-md);
+      display: grid;
+      gap: var(--space-sm);
+    }
+    .compare-row {
+      border-top: var(--card-border);
+      padding-top: var(--space-sm);
+    }
+
+    /* Tables */
+    .table-wrap {
+      overflow-x: auto;
+      border: var(--card-border);
+      border-radius: var(--rounded-lg);
+      background: var(--surface-container-low);
+    }
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+    table.data-table thead th {
+      background: var(--surface-container);
+      border-bottom: var(--section-rule);
+      padding: var(--space-sm) var(--space-md);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--on-surface);
+      white-space: nowrap;
+    }
+    table.data-table tbody td {
+      padding: var(--space-sm) var(--space-md);
+      border-bottom: var(--card-border);
+      vertical-align: top;
+      line-height: 1.45;
+    }
+    table.data-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+    table.data-table tbody tr:hover {
+      background: var(--background);
+    }
+    .num-cell {
+      font-family: var(--font-label);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    /* Debate / Lens Cards */
+    .lens-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+      gap: var(--space-md);
+      margin-top: var(--space-md);
+    }
+
+    /* Stress Scenario Impact Bars */
+    .impact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
+      gap: var(--space-sm);
+      margin-top: var(--space-md);
+    }
+    .impact-tile {
+      background: var(--background);
+      border: var(--card-border);
+      border-radius: var(--rounded);
+      padding: var(--space-sm) var(--space-md);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+    .impact-meter {
+      height: 6px;
+      width: 100%;
+      background: var(--surface-container-high);
+      border-radius: var(--badge-radius);
+      overflow: hidden;
+    }
+    .impact-fill {
+      height: 100%;
+      transition: width var(--dur-short) var(--ease-out);
+    }
+    .impact-fill.pos { background: var(--data-3); }
+    .impact-fill.neg { background: var(--data-4); }
+    .impact-fill.mix { background: var(--data-2); }
+    .impact-fill.neu { background: var(--data-1); }
+
+    /* Timeline & Watchlist */
+    .timeline-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
+      gap: var(--space-md);
+    }
+    .timeline-item {
+      background: var(--surface-container-low);
+      border: var(--card-border);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-md);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+    .watch-check {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      padding: var(--space-sm);
+      background: var(--surface-container-low);
+      border: var(--card-border);
+      border-radius: var(--rounded);
+      cursor: pointer;
+    }
+    .watch-check input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+      accent-color: var(--secondary);
+      flex-shrink: 0;
+    }
+
+    /* Empty state */
+    .empty-state {
+      background: var(--surface-container);
+      border: var(--card-border);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-xl);
+      text-align: center;
+      display: grid;
+      gap: var(--space-sm);
+      justify-items: center;
+    }
+
+    /* Subtle status banner */
+    .status-line {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      color: var(--on-surface-variant);
+    }
+
+    @media (max-width: 900px) {
+      .split-grid-8-4,
+      .split-grid-5-7 {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 640px) {
+      .page-grid {
+        padding: var(--space-md);
+        gap: var(--space-lg);
+      }
+      .figure-card {
+        padding: var(--space-md);
+      }
+      .chart-shell {
+        min-height: 280px;
+        height: 300px;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-grid">
+
+    <!-- 00: MASTHEAD & HERO CONSENSUS STRIP -->
+    <header class="masthead" aria-label="2027 Institutional Outlooks Masthead">
+      <div class="dossier-bar">
+        <div class="dossier-bar-left">
+          <span class="dossier-pill">BRIEFING</span>
+          <span class="dossier-meta">Global Investment Intelligence · 12 Institutional Reports · Nov 2026</span>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn btn-compact" onclick="exportBriefingSummary()" title="Download CSV comparison table">
+            <i data-lucide="download" aria-hidden="true" style="width:15px;height:15px;"></i>
+            <span>Export CSV</span>
+          </button>
+          <button type="button" class="btn btn-compact" id="reset-state-btn" onclick="resetWorkspaceState(this)">
+            <i data-lucide="rotate-ccw" aria-hidden="true" style="width:15px;height:15px;"></i>
+            <span>Reset Workspace</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="masthead-top">
+        <div>
+          <h1 class="title">2027 Global Investment Outlooks: Consensus, Divergence &amp; Risk</h1>
+          <p class="standfirst">
+            Synthesizing macro forecasts, central bank trajectories, the AI capital-spending turning point, asset-class positioning, and sovereign or energy tail risks across 12 institutional 2027 outlooks.
+          </p>
+        </div>
+      </div>
+
+      <nav class="jump-nav" aria-label="Dashboard sections">
+        <button type="button" class="jump-link" onclick="scrollToSection('sec-macro')">01 Macro &amp; Rates</button>
+        <button type="button" class="jump-link" onclick="scrollToSection('sec-institutions')">02 Institution Explorer</button>
+        <button type="button" class="jump-link" onclick="scrollToSection('sec-compare')">03 Head-to-Head Compare</button>
+        <button type="button" class="jump-link" onclick="scrollToSection('sec-assets')">04 Asset Class Matrix</button>
+        <button type="button" class="jump-link" onclick="scrollToSection('sec-ai')">05 The AI Cycle Debate</button>
+        <button type="button" class="jump-link" onclick="scrollToSection('sec-stress')">06 Tail-Risk Simulator</button>
+        <button type="button" class="jump-link" onclick="scrollToSection('sec-calendar')">07 Catalyst Watchlist</button>
+      </nav>
+
+      <!-- Top-line KPI Row -->
+      <div class="kpi-grid" aria-label="Headline 2027 projections">
+        <div class="figure-card kpi-card">
+          <div class="kpi-label">
+            <span>Global GDP Baseline</span>
+            <span class="tag tag-slate">Goldman Sachs</span>
+          </div>
+          <div class="value">2.8% <span style="font-size:0.95rem;color:var(--on-surface-variant);font-weight:400;">vs 2.7% in 2026</span></div>
+          <p class="kpi-sub">US slows modestly to 2.1% (Barclays); Eurozone 1.4% (Santander); China 4.5% (ING); France 0.5% (ING).</p>
+        </div>
+
+        <div class="figure-card kpi-card">
+          <div class="kpi-label">
+            <span>Policy Rate Pivot</span>
+            <span class="tag tag-amber">Late-2027 Split</span>
+          </div>
+          <div class="value">+1–2 Hikes → Cuts</div>
+          <p class="kpi-sub">Goldman sees +2 Fed &amp; +1 ECB hikes before late-2027 cuts; Barclays sees a long pause; Invesco flags +2 BoJ hikes.</p>
+        </div>
+
+        <div class="figure-card kpi-card">
+          <div class="kpi-label">
+            <span>AI Debt &amp; Impulse Peak</span>
+            <span class="tag tag-pine">JPM / Goldman</span>
+          </div>
+          <div class="value">$242B <span style="font-size:0.95rem;color:var(--on-surface-variant);font-weight:400;">Tech IG Issuance</span></div>
+          <p class="kpi-sub">US Tech IG net bond issuance nearly doubled 2025 full-year by Oct 2026 (JPM); AI impulse peaks early 2027 (Goldman).</p>
+        </div>
+
+        <div class="figure-card kpi-card">
+          <div class="kpi-label">
+            <span>Severe Oil Shock Risk</span>
+            <span class="tag tag-brick">Gilmour / Tail Risk</span>
+          </div>
+          <div class="value">&gt;$150/bbl</div>
+          <p class="kpi-sub">Middle East escalation with low US SPR risks acute oil spike; French 5.5% deficit (ING) drives sovereign spread risk.</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- 01: MACRO FORECASTS & CENTRAL BANK TRAJECTORIES -->
+    <section id="sec-macro" aria-labelledby="heading-macro">
+      <div class="dossier-bar">
+        <div class="dossier-bar-left">
+          <span class="dossier-pill">01</span>
+          <span class="dossier-meta">Macro Projections · Regional Divergence · Policy Paths</span>
+        </div>
+        <span class="status-line">All figures grounded in published Nov 2026 institutional outlooks</span>
+      </div>
+
+      <h2 class="section-title" id="heading-macro">Macro Projections &amp; The Policy Divergence</h2>
+      <p class="body-copy" style="margin-top:var(--space-xs);">
+        While headline global growth remains near trend, institutions diverge sharply on whether 2027 brings a fiscal-and-rate hangover or a broadening reacceleration as energy shocks unwind. Switch chart views to inspect the explicit figures cited across reports.
+      </p>
+
+      <div class="split-grid-8-4" style="margin-top:var(--space-md);">
+        <div class="figure-card">
+          <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:var(--space-sm);">
+            <div>
+              <h3 class="card-title" id="macro-chart-title">2026 vs. 2027 Explicit GDP Projections (%)</h3>
+              <p class="muted-copy" id="macro-chart-subtitle">Source-reported annual GDP forecasts by economy &amp; institution</p>
+            </div>
+            <div class="btn-row" role="group" aria-label="Macro chart view selector">
+              <button type="button" class="btn btn-compact" id="chart-btn-gdp" aria-pressed="true" onclick="setMacroChartView('gdp')">GDP Forecasts</button>
+              <button type="button" class="btn btn-compact" id="chart-btn-surprise" aria-pressed="false" onclick="setMacroChartView('surprise')">2026 Shocks (pp)</button>
+              <button type="button" class="btn btn-compact" id="chart-btn-rates" aria-pressed="false" onclick="setMacroChartView('rates')">Central Bank Path</button>
+              <button type="button" class="btn btn-compact" id="chart-btn-capital" aria-pressed="false" onclick="setMacroChartView('capital')">Capital &amp; Returns</button>
+            </div>
+          </div>
+
+          <div class="chart-shell">
+            <canvas id="macroChart" aria-label="Macroeconomic comparison chart"></canvas>
+          </div>
+          <p class="chart-legend-note" id="macro-chart-note">
+            Sources: Goldman Sachs (Global 2.7%→2.8%), Barclays (US 2.4%→2.1%), ING (China 4.6%→4.5%; France 0.3%→0.5%), Santander (Eurozone 1.4%, Colombia 2.0%, Brazil 1.3%).
+          </p>
+        </div>
+
+        <aside class="aside-box" aria-label="Three Core Macro Debates">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-sm);">
+            <span class="dossier-meta" style="color:var(--on-surface);font-weight:600;">Three Core Macro Fault Lines</span>
+            <span class="index-num">DEBATE</span>
+          </div>
+          <div style="display:grid;gap:var(--space-md);">
+            <div style="border-bottom:var(--card-border);padding-bottom:var(--space-sm);">
+              <div style="font-weight:600;color:var(--secondary);font-size:0.9rem;">1. US Resilience vs. Fiscal Hangover</div>
+              <p class="muted-copy" style="margin-top:0.2rem;">
+                <strong>Cautious:</strong> Barclays flags negative real wage growth slowing consumption; Columbia Threadneedle warns of a 2027 fiscal hangover.<br>
+                <strong>Constructive:</strong> ABN AMRO sees defence capex picking up the baton; J.P. Morgan and Invesco expect AI capex &amp; cooling oil to keep expansion intact.
+              </p>
+            </div>
+            <div style="border-bottom:var(--card-border);padding-bottom:var(--space-sm);">
+              <div style="font-weight:600;color:var(--secondary);font-size:0.9rem;">2. Europe: Structural Bruise vs. Rollout Upside</div>
+              <p class="muted-copy" style="margin-top:0.2rem;">
+                <strong>Bearish/Cautious:</strong> ABN AMRO expects below-trend eurozone growth; ING flags France at 0.5% GDP and 5.5% deficit; Goldman sees EUR downside until France's April election.<br>
+                <strong>Constructive:</strong> Lily Gilmour favors European equities on German stimulus &amp; AI rollout; Santander sees Eurozone accelerating to 1.4%.
+              </p>
+            </div>
+            <div>
+              <div style="font-weight:600;color:var(--secondary);font-size:0.9rem;">3. Inflation &amp; Central Bank Cuts</div>
+              <p class="muted-copy" style="margin-top:0.2rem;">
+                <strong>Higher-for-Longer:</strong> Barclays expects Fed hikes around turn of year then a long pause; Santander sees upward repricing of the neutral rate.<br>
+                <strong>Disinflation Pivot:</strong> ABN AMRO and Goldman see Middle East supply recovery &amp; fading tariff/energy shocks enabling late-2027 rate cuts.
+              </p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 02: INSTITUTION EXPLORER & BRIEFING READER -->
+    <section id="sec-institutions" aria-labelledby="heading-institutions">
+      <div class="dossier-bar">
+        <div class="dossier-bar-left">
+          <span class="dossier-pill">02</span>
+          <span class="dossier-meta">Institution Explorer · 12 Source Reports · Interactive Dossier</span>
+        </div>
+        <span class="status-line" id="inst-match-count">Showing 12 of 12 institutions</span>
+      </div>
+
+      <h2 class="section-title" id="heading-institutions">Parse &amp; Inspect Every Institutional Outlook</h2>
+      <p class="body-copy" style="margin-top:var(--space-xs);">
+        Filter by macro camp, search across specific topics (e.g., <em>France</em>, <em>PIK</em>, <em>Japan</em>, <em>defence</em>, <em>options</em>), or select any institution card to inspect its complete regional, AI, asset-class, and tail-risk thesis side by side.
+      </p>
+
+      <!-- Filter Control Bar -->
+      <div class="control-bar" style="margin-top:var(--space-md);">
+        <div class="field-group">
+          <label class="field-label" for="inst-search">Search Themes, Tickers &amp; Risks</label>
+          <input type="text" id="inst-search" class="text-input" placeholder="Try: France, hyperscalers, oil, BoJ, PIK…" oninput="handleInstFilterChange()">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="inst-camp-filter">Strategic Camp</label>
+          <select id="inst-camp-filter" class="select-input" onchange="handleInstFilterChange()">
+            <option value="all">All 12 Institutions</option>
+            <option value="broadening">Constructive / Broadening (4)</option>
+            <option value="late-cycle">Late-Cycle / Selective (4)</option>
+            <option value="structural">Macro-Political / Structural (4)</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="inst-region-filter">Highlighted Region Focus</label>
+          <select id="inst-region-filter" class="select-input" onchange="handleInstFilterChange()">
+            <option value="all">All Regions</option>
+            <option value="us">United States</option>
+            <option value="europe">Eurozone, UK &amp; France</option>
+            <option value="asia">China, Japan &amp; Asia</option>
+            <option value="latam">Latin America &amp; EM</option>
+          </select>
+        </div>
+        <button type="button" class="btn" onclick="clearInstFilters()">Clear Filters</button>
+      </div>
+
+      <div class="split-grid-5-7" style="margin-top:var(--space-md);">
+        <!-- Left: Card Directory -->
+        <div class="card-wrapper">
+          <div class="inst-list" id="inst-card-grid" role="listbox" aria-label="Institutions list"></div>
+          <div id="inst-empty-state" class="empty-state" style="display:none;margin-top:var(--space-md);">
+            <strong>No institutional outlooks match those filters.</strong>
+            <p class="muted-copy">Try clearing the search query or switching back to All Regions.</p>
+            <button type="button" class="btn" onclick="clearInstFilters()">Reset Institution Filters</button>
+          </div>
+        </div>
+
+        <!-- Right: Active Institution Briefing Detail -->
+        <div class="figure-card detail-pane" id="inst-detail-pane" aria-live="polite">
+          <!-- Populated dynamically by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 03: HEAD-TO-HEAD COMPARATOR -->
+    <section id="sec-compare" aria-labelledby="heading-compare">
+      <div class="dossier-bar">
+        <div class="dossier-bar-left">
+          <span class="dossier-pill">03</span>
+          <span class="dossier-meta">Head-to-Head Comparator · Side-by-Side Alignment</span>
+        </div>
+        <span class="status-line">Selections persist across sessions</span>
+      </div>
+
+      <h2 class="section-title" id="heading-compare">Compare Two or Three Houses Side by Side</h2>
+      <p class="body-copy" style="margin-top:var(--space-xs);">
+        Choose any combination of institutions—such as Goldman Sachs vs. Invesco on rates and market broadening, or Barclays vs. UBS on fixed income and AI capex—to directly contrast their 2027 convictions.
+      </p>
+
+      <div class="control-bar" style="margin-top:var(--space-md);">
+        <div class="field-group">
+          <label class="field-label" for="compare-slot-a">Institution A</label>
+          <select id="compare-slot-a" class="select-input" onchange="handleCompareChange()"></select>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="compare-slot-b">Institution B</label>
+          <select id="compare-slot-b" class="select-input" onchange="handleCompareChange()"></select>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="compare-slot-c">Institution C (Optional)</label>
+          <select id="compare-slot-c" class="select-input" onchange="handleCompareChange()"></select>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn" onclick="loadComparePreset('goldman','invesco','abn')">Macro Split Preset</button>
+          <button type="button" class="btn" onclick="loadComparePreset('jpm','ubs','barclays')">Wealth &amp; Credit Preset</button>
+        </div>
+      </div>
+
+      <div class="compare-grid" id="compare-output-grid">
+        <!-- Populated dynamically -->
+      </div>
+    </section>
+
+    <!-- 04: ASSET CLASS CONVICTION MATRIX -->
+    <section id="sec-assets" aria-labelledby="heading-assets">
+      <div class="dossier-bar">
+        <div class="dossier-bar-left">
+          <span class="dossier-pill">04</span>
+          <span class="dossier-meta">Cross-Asset Positioning · Equities, Fixed Income, Alts, Real Assets &amp; FX</span>
+        </div>
+        <span class="status-line" id="asset-row-count">Showing all asset classes</span>
+      </div>
+
+      <h2 class="section-title" id="heading-assets">Asset Class Perspectives &amp; Portfolio Playbooks</h2>
+      <p class="body-copy" style="margin-top:var(--space-xs);">
+        Following 2026's wide equity outperformance, institutions converge on selectivity, income, and broader return drivers—yet diverge sharply on US equity concentration, European exposure, duration, and private credit risk.
+      </p>
+
+      <div class="btn-row" style="margin-top:var(--space-md);" role="group" aria-label="Asset class filter">
+        <button type="button" class="btn" data-asset-filter="all" aria-pressed="true" onclick="setAssetFilter('all')">All Asset Classes</button>
+        <button type="button" class="btn" data-asset-filter="equities" aria-pressed="false" onclick="setAssetFilter('equities')">Public Equities</button>
+        <button type="button" class="btn" data-asset-filter="fixed_income" aria-pressed="false" onclick="setAssetFilter('fixed_income')">Rates &amp; Gov Bonds</button>
+        <button type="button" class="btn" data-asset-filter="credit" aria-pressed="false" onclick="setAssetFilter('credit')">IG, HY &amp; Private Credit</button>
+        <button type="button" class="btn" data-asset-filter="alternatives" aria-pressed="false" onclick="setAssetFilter('alternatives')">PE, Hedge Funds &amp; Options</button>
+        <button type="button" class="btn" data-asset-filter="real_assets" aria-pressed="false" onclick="setAssetFilter('real_assets')">Real Assets &amp; Commodities</button>
+        <button type="button" class="btn" data-asset-filter="fx" aria-pressed="false" onclick="setAssetFilter('fx')">Currencies &amp; Gold</button>
+      </div>
+
+      <div class="table-wrap" style="margin-top:var(--space-md);">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Asset Class</th>
+              <th>Institution</th>
+              <th>Stance</th>
+              <th>Core Call &amp; Rationale</th>
+              <th>Specific Risks &amp; Hedges</th>
+            </tr>
+          </thead>
+          <tbody id="asset-matrix-body">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 05: THE AI CYCLE DEBATE -->
+    <section id="sec-ai" aria-labelledby="heading-ai">
+      <div class="dossier-bar">
+        <div class="dossier-bar-left">
+          <span class="dossier-pill">05</span>
+          <span class="dossier-meta">Thematic Deep Dive · AI Capex, Financing &amp; Commercialisation</span>
+        </div>
+        <span class="status-line">4 analytical lenses across 12 reports</span>
+      </div>
+
+      <h2 class="section-title" id="heading-ai">The 2027 AI Turning Point: Build-Out, Financing &amp; Rollout</h2>
+      <p class="body-copy" style="margin-top:var(--space-xs);">
+        Nearly every 2027 outlook treats artificial intelligence as the market's defining structural force—but the focus has shifted from blind capex enthusiasm to peak impulse timing, hyperscaler debt issuance, power bottlenecks, and ROI proof.
+      </p>
+
+      <div class="btn-row" style="margin-top:var(--space-md);" role="group" aria-label="AI debate lens selector">
+        <button type="button" class="btn btn-secondary-active" data-ai-lens="impulse" aria-pressed="true" onclick="setAiLens('impulse')">01 Impulse Peak vs. Continuation</button>
+        <button type="button" class="btn btn-secondary-active" data-ai-lens="financing" aria-pressed="false" onclick="setAiLens('financing')">02 Debt Issuance &amp; FCF Strain</button>
+        <button type="button" class="btn btn-secondary-active" data-ai-lens="rollout" aria-pressed="false" onclick="setAiLens('rollout')">03 Build-Out to Rollout</button>
+        <button type="button" class="btn btn-secondary-active" data-ai-lens="constraints" aria-pressed="false" onclick="setAiLens('constraints')">04 Bottlenecks, Labor &amp; Backlash</button>
+      </div>
+
+      <div class="figure-card" id="ai-lens-panel" style="margin-top:var(--space-md);">
+        <!-- Populated dynamically -->
+      </div>
+    </section>
+
+    <!-- 06: TAIL-RISK & STRESS-TEST SIMULATOR -->
+    <section id="sec-stress" aria-labelledby="heading-stress">
+      <div class="dossier-bar">
+        <div class="dossier-bar-left">
+          <span class="dossier-pill">06</span>
+          <span class="dossier-meta">Risk Playbook · Scenario Stress-Tester · Portfolio Hedges</span>
+        </div>
+        <span class="status-line">Grounded in JPM, GS, Gilmour, Barclays, ABN &amp; Neuberger stress scenarios</span>
+      </div>
+
+      <h2 class="section-title" id="heading-stress">2027 Tail-Risk &amp; Portfolio Stress Simulator</h2>
+      <p class="body-copy" style="margin-top:var(--space-xs);">
+        Select a macro or market shock scenario to examine how transmission channels hit growth, inflation, and asset classes—and which portfolio hedges institutions recommend when traditional stock-bond correlations break down.
+      </p>
+
+      <div class="btn-row" style="margin-top:var(--space-md);" role="group" aria-label="Stress test scenario selector">
+        <button type="button" class="btn" data-scenario="baseline" aria-pressed="true" onclick="setStressScenario('baseline')">Baseline: Bumpy Resilience</button>
+        <button type="button" class="btn" data-scenario="oil" aria-pressed="false" onclick="setStressScenario('oil')">Shock 1: Middle East Oil &gt;$150/bbl</button>
+        <button type="button" class="btn" data-scenario="ai_bust" aria-pressed="false" onclick="setStressScenario('ai_bust')">Shock 2: Abrupt AI Capex Halt</button>
+        <button type="button" class="btn" data-scenario="sovereign" aria-pressed="false" onclick="setStressScenario('sovereign')">Shock 3: French / Sovereign Debt Stress</button>
+        <button type="button" class="btn" data-scenario="overtighten" aria-pressed="false" onclick="setStressScenario('overtighten')">Shock 4: Central Bank Policy Error</button>
+      </div>
+
+      <div class="figure-card" id="stress-output-panel" style="margin-top:var(--space-md);">
+        <!-- Populated dynamically -->
+      </div>
+    </section>
+
+    <!-- 07: 2027 CATALYST TIMELINE, WATCHLIST & SOURCES -->
+    <section id="sec-calendar" aria-labelledby="heading-calendar">
+      <div class="dossier-bar">
+        <div class="dossier-bar-left">
+          <span class="dossier-pill">07</span>
+          <span class="dossier-meta">2027 Macro Calendar · Barclays Risk Indicators · Source Index</span>
+        </div>
+        <span class="status-line" id="watchlist-progress">0 of 8 catalysts tracked</span>
+      </div>
+
+      <h2 class="section-title" id="heading-calendar">2027 Catalyst Timeline &amp; Interactive Watchlist</h2>
+      <p class="body-copy" style="margin-top:var(--space-xs);">
+        Key calendar milestones and monitoring themes flagged across the 2027 outlooks. Check off items as you track them across the year; selections are saved to your workspace state.
+      </p>
+
+      <div class="split-grid-8-4" style="margin-top:var(--space-md);">
+        <div class="timeline-grid" id="watchlist-grid">
+          <!-- Populated dynamically -->
+        </div>
+
+        <aside class="aside-box" aria-label="Barclays Jazz Compilation 2027 and Methodology">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-sm);">
+            <span class="dossier-meta" style="color:var(--on-surface);font-weight:600;">Barclays "Jazz Compilation 2027"</span>
+            <span class="index-num">4 THEMES</span>
+          </div>
+          <p class="muted-copy" style="margin-bottom:var(--space-sm);">
+            Twelve risk indicators monitored by Barclays Private Bank to detect a "wrong note" in 2027:
+          </p>
+          <ul class="detail-list" style="margin-bottom:var(--space-md);">
+            <li><strong>Price of Energy:</strong> Oil/gas supply disruptions vs. Middle East normalization.</li>
+            <li><strong>Price of Money:</strong> Long-end yields, term premia &amp; central bank hikes.</li>
+            <li><strong>The AI Cycle:</strong> Hyperscaler capex commitments, FCF &amp; earnings comps.</li>
+            <li><strong>Market Behaviour:</strong> Sector dispersion, CCC/HY spreads &amp; correlation spikes.</li>
+          </ul>
+          <div style="border-top:var(--card-border);padding-top:var(--space-sm);">
+            <div style="font-family:var(--font-label);font-size:var(--label-size);text-transform:uppercase;color:var(--secondary);margin-bottom:var(--space-xs);">Sources Synthesized (12 Documents)</div>
+            <p class="muted-copy" style="font-size:0.8rem;">
+              ABN AMRO Group Economics (10 Nov 2026); Barclays Private Bank (Outlook 2027); ING THINK (3 Nov 2026); Goldman Sachs Global Economics &amp; Global Markets Outlooks (12 Nov 2026); HSBC Think Future 2027; J.P. Morgan Annual Outlook &amp; Market Insights (BID); Columbia Threadneedle Multi-Asset Outlook (Sept 2026); Neuberger Berman Solving for 2027; Santander The Year Ahead 2027; UBS CIO GWM Year Ahead 2027 (12 Nov 2026 data); Invesco 2027 Outlook (David Chao, Nov 2026); Lily Gilmour 2027 Investment Outlook.
+            </p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+  </div>
+
+  <api-shim></api-shim>
+
+  <script>
+    /* =========================================================================
+       DATA STORE — Grounded strictly in the 12 institutional 2027 outlooks
+       ========================================================================= */
+    const INSTITUTIONS = [
+      {
+        id: `goldman`,
+        num: `01`,
+        name: `Goldman Sachs`,
+        title: `Growing Pains / Steady Baseline, Downside Risks`,
+        date: `12 Nov 2026`,
+        authors: `Kamakshya Trivedi, Dominic Wilson, Jan Hatzius et al.`,
+        camp: `late-cycle`,
+        campLabel: `Late-Cycle / Balanced`,
+        regions: [`us`, `europe`, `asia`],
+        headline: `Global GDP edges from 2.7% to 2.8% while the AI investment impulse peaks in early 2027.`,
+        macro: `Global GDP 2.7% (2026) to 2.8% (2027); 2026 headline inflation ending at 3.7% Q4/Q4 (+1.3pp on Iran war). US core inflation declines steadily; tariff pass-through ends.`,
+        rates: `Expect 2 more Fed hikes and 1 ECB hike, then BOTH returning to cuts in late 2027. Forecasts sit below market pricing, pulling long-term rates down modestly.`,
+        aiThesis: `AI investment impulse (additional capex as % of GDP) peaks in early 2027—a "second derivative" turning point that tests equity markets more than GDP. Hyperscaler FCF deteriorating amid record issuance.`,
+        assetCalls: `Positive baseline returns in equities and bonds, ~0% commodities. US equity gains drop well below >20% annualized pace. Bonds reclaim hedging value. Softer USD vs JPY & CNY; EUR downside into French election; US credit spreads widen.`,
+        tailRisks: `Renewed Iran escalation; fiscal yield spikes (France April election); AI capex disappointment or early AI labor-shedding; major cybersecurity event. Recommends longer-dated equity index options & energy/gold hedges.`
+      },
+      {
+        id: `jpm`,
+        num: `02`,
+        name: `J.P. Morgan`,
+        title: `A Year to Stay BID (Broaden, Income, Diversification)`,
+        date: `2027 Annual & Market Outlooks`,
+        authors: `J.P. Morgan Asset Management / Private Bank`,
+        camp: `broadening`,
+        campLabel: `Constructive / BID`,
+        regions: [`us`, `asia`, `europe`],
+        headline: `The new frontier of AI, fragmentation, and security must be funded—stay Broad, Income-focused, and Diversified.`,
+        macro: `US growth moderates but stays positive as steady AI capex offsets fading fiscal tailwinds. Inflation eases slightly yet remains volatile due to global fragmentation and supply-chain security.`,
+        rates: `Central banks are adjusting policy stance to anchor inflation expectations rather than break demand. Cash earns a credible return, raising the hurdle rate for distant-cash-flow projects.`,
+        aiThesis: `Durability of AI capex is the marginal growth driver, but financing mix is shifting: US Tech IG bond net issuance reached $242B through Oct 2026 (nearly double full-year 2025). Cash-generative hyperscalers beat leveraged neoclouds.`,
+        assetCalls: `Expect convergence in risk-adjusted returns after 2026 equity outperformance. Broaden equities across regions & the AI value chain; prioritize quality bonds & income; floating-rate private credit yields 9.4% (watch PIK & amendments).`,
+        tailRisks: `Hiking campaign that breaks demand; sustained energy surge; abrupt AI investment halt; sovereign debt crisis. Emphasizes holistic interaction of holdings under stress.`
+      },
+      {
+        id: `ubs`,
+        num: `03`,
+        name: `UBS CIO GWM`,
+        title: `Year Ahead 2027: Sustaining Resilience`,
+        date: `12 Nov 2026`,
+        authors: `UBS Chief Investment Office GWM`,
+        camp: `late-cycle`,
+        campLabel: `Selective / Neutral US`,
+        regions: [`us`, `europe`, `asia`, `latam`],
+        headline: `Resilience holds, but high expectations prompt a move to Neutral on US equities while Fixed Income turns Attractive.`,
+        macro: `Inflation expected to ease, though AI and energy-security spending plus heavy public borrowing keep interest rates elevated. Debt sustainability hinges on nominal growth exceeding funding costs as 2020–21 debt refinances.`,
+        rates: `Elevated financing costs persist; heavy government borrowing argues against a sharp drop in long-term yields even as inflation moderates.`,
+        aiThesis: `Hyperscalers (Amazon, Alphabet, Meta, Microsoft, Oracle) repeatedly beat capex estimates, yet aggregate FCF turned negative/declined while semiconductor FCF (NVIDIA, Micron, Broadcom, AMD) surged. Watch excess capacity & power limits.`,
+        assetCalls: `Moved US equities to Neutral; moderate equity returns with high dispersion. Bonds Attractive: quality bonds for resilience, HY & EM bonds selectively for income. Commodities/infra & Gold benefit; favor GBP & select EM FX, CHF underperforms.`,
+        tailRisks: `US-China strategic competition extending to chips, rare earths, batteries & cyber; Europe-China trade friction; AI monetization misses; sovereign fiscal reckoning.`
+      },
+      {
+        id: `barclays`,
+        num: `04`,
+        name: `Barclays Private Bank`,
+        title: `Outlook 2027: Until the Music Stops`,
+        date: `Oct / Nov 2026`,
+        authors: `Jean-Damien Marie, Nikola Vasiljevic, Julien Lafargue`,
+        camp: `late-cycle`,
+        campLabel: `Disciplined / Hedged`,
+        regions: [`us`, `europe`],
+        headline: `Diversify by return drivers, not asset class labels, and use asymmetric option overlays while the music plays.`,
+        macro: `US GDP slows gradually from 2.4% (2026) to 2.1% (2027); negative real wage growth cools consumption while AI capex carries growth. Eurozone faces winter energy bite, political instability, and back-end loaded improvement.`,
+        rates: `Inflation stays well above Fed target for most of 2027: expect a couple more Fed hikes around turn of year before a long pause. Duration neutral in EU/UK (4–6 yrs), neutral-to-UW in US (3–5 yrs), ready to extend on fiscal yield spikes.`,
+        aiThesis: `Equities hit records on extraordinary AI earnings, but leadership remains heavily concentrated. Sharp swings are a warning not to double down on AI across regions, sectors, and credit simultaneously.`,
+        assetCalls: `Equities driven by earnings not valuations: initial playlist pairs AI exposure, healthcare, and humility. Tightest HY spreads likely reached in 2026 (CCC widened); pick strong issuers caught in sector widening. Use option overlays & relative-value trades.`,
+        tailRisks: `Reversal in AI infrastructure build-out; sharp rise in cost of money; sovereign-led sell-offs where government bonds fall alongside equities. Track 12 indicators across Energy, Price of Money, AI Cycle, and Market Behaviour.`
+      },
+      {
+        id: `abn`,
+        num: `05`,
+        name: `ABN AMRO`,
+        title: `Global Outlook 2027: How Resilient Is Resilience?`,
+        date: `10 Nov 2026`,
+        authors: `Group Economics — Macro Research`,
+        camp: `late-cycle`,
+        campLabel: `Regional Divergence`,
+        regions: [`us`, `europe`, `asia`],
+        headline: `Global growth stays near trend via a "capex troika", while US defence strength contrasts with a bruised Eurozone.`,
+        macro: `US investment impulse shifts from AI to domestically concentrated defence spending. Eurozone (ex-Ireland) slips below trend on tighter fiscal/monetary policy & political uncertainty; Netherlands slows; Germany fiscal-driven. China steady via capex.`,
+        rates: `Falling energy prices (Middle East oil recovery + non-Qatari LNG, no US-Iran deal required) drive a sharp headline inflation drop, limiting near-term hikes and opening the door to rate cuts in late 2027. Rising term premia cap long-bond rallies.`,
+        aiThesis: `AI, defence, and clean-energy form a resilient "capex troika." Slower AI capex growth weighs on hardware exporters and world trade, while stronger defence capex keeps the US impulse supported.`,
+        assetCalls: `Bond yields decline as markets price a less hawkish path (long end constrained by bond supply). Euro remains discounted against USD due to weaker European growth and sovereign/political risk.`,
+        tailRisks: `AI bust (not base case, would hit capex, household wealth & credit); French fiscal slippage reinforcing market stress across borders; EU-China trade/geopolitical escalation.`
+      },
+      {
+        id: `invesco`,
+        num: `06`,
+        name: `Invesco`,
+        title: `2027 Outlook: Beyond Concentration`,
+        date: `Nov 2026`,
+        authors: `David Chao`,
+        camp: `broadening`,
+        campLabel: `Contrarian / Reacceleration`,
+        regions: [`us`, `europe`, `asia`],
+        headline: `Today's headwinds become tomorrow's tailwinds: stabilizing oil and rates spark a broad economic reacceleration.`,
+        macro: `Durable growth, strong earnings, and reasonable valuations beneath mania fears. Europe/UK data defied energy & yield shocks; easing energy improves activity. China holds steady growth pivoting to tech, clean energy & "anti-involution" margin recovery.`,
+        rates: `Central banks step back from tightening as oil and rates stabilize. Skeptical BoE hikes in 2027; ECB may hike once more. Contrasting Japan: Bank of Japan expected to hike TWICE by mid-2027.`,
+        aiThesis: `AI repeatedly wavered in 2026 but continues supporting momentum alongside higher-income consumption. Crucially, 2027 markets broaden BEYOND narrow AI/mega-cap concentration.`,
+        assetCalls: `Constructive on broadening equity leadership beyond concentrated tech; positive on Japanese equities (TSE governance reforms, productivity, pricing power) while expansionary Japanese fiscal policy poses bond market risks.`,
+        tailRisks: `US-China trade and technology policy escalation; bond market stress from expansionary fiscal policy; small/mid-cap volatility if reacceleration stalls.`
+      },
+      {
+        id: `santander`,
+        num: `07`,
+        name: `Santander`,
+        title: `The Year Ahead 2027`,
+        date: `2027 Report`,
+        authors: `Santander Research (incl. Marco Antonio Caruso, Sergio Cruz, Juan Cerruti)`,
+        camp: `structural`,
+        campLabel: `Supply-Side / LatAm & EU`,
+        regions: [`us`, `europe`, `latam`],
+        headline: `Supply-side forces and a €30T global financing gap push the neutral rate higher as LatAm gains strategic weight.`,
+        macro: `Global trend growth ~0.5pp lower than 2000–2020 with fewer fiscal buffers. Euro area accelerates to 1.4% (uneven; Germany gains). UK faces inflation/fiscal strains. LatAm: Brazil slows to 1.3% (~4% CPI), Colombia 2.0%, Mexico resilient (~4% CPI).`,
+        rates: `Upward repricing of the equilibrium ("neutral") interest rate. Hawkish Fed & high long rates guide US core inflation toward 2%. Brazil remains restrictive (less so); Colombia begins rate cuts toward year-end.`,
+        aiThesis: `AI poses opposing inflation forces: long-run supply-side productivity (disinflationary) vs. near-term demand spikes for chips/software, equity wealth effects, and Big Tech bond issuance lifting US long yields. Diffusion remains uneven.`,
+        assetCalls: `€50T gross investment needs (2026–30) create a €30T financing gap requiring deeper capital markets and EU Banking Union completion. LatAm offers critical minerals, clean energy, and agri-food supply-chain value.`,
+        tailRisks: `EU defence stimulus leaking into imports/inflation without domestic capacity; tariffs/geopolitics reigniting CPI; weak fiscal signals keeping risk premia elevated in Brazil & Europe.`
+      },
+      {
+        id: `neuberger`,
+        num: `08`,
+        name: `Neuberger Berman`,
+        title: `Solving for 2027`,
+        date: `2027 Brochure`,
+        authors: `Neuberger Berman Investment Strategy`,
+        camp: `structural`,
+        campLabel: `Position-by-Position`,
+        regions: [`us`, `europe`],
+        headline: `Selectivity is the thread across all asset classes: returns in 2027 will be earned position by position.`,
+        macro: `Synchronized but relatively short tightening cycle; higher borrowing costs create broad dispersion across issuers, vintages, and borrowers.`,
+        rates: `Higher yields restore fixed income's income cushion. Short-to-intermediate maturities favored with opportunistic duration additions; watch inflation re-acceleration, ECB policy error, or France/UK funding strain.`,
+        aiThesis: `Focus shifts to companies generating actual ROI on AI capex and preserving margins outside AI hardware. Data centers now carry political backlash risk outside fundamentals; hyperscaler issuance offers bond yield pick-up.`,
+        assetCalls: `Public Equity: infra, industrials, defense, active management. Public FI: financials, industrials, hyperscaler IG. Private Equity: secondaries, co-investments, hybrid capital, middle market. Private Credit: disciplined new-deal spreads (watch 2027–28 software refinancing & non-tech PIK). Real Assets: cyber/grid/water infra, utilities, commodities.`,
+        tailRisks: `Consequential cyber disruption to financial, power, water, transport, or digital infrastructure; political backlash slowing data center approvals; IPO exit bottlenecks for mega buyouts.`
+      },
+      {
+        id: `ing`,
+        num: `09`,
+        name: `ING THINK`,
+        title: `Global Outlook 2027: Power Play`,
+        date: `3 Nov 2026`,
+        authors: `ING Economic & Financial Analysis`,
+        camp: `structural`,
+        campLabel: `Geopolitics & "3 Calls"`,
+        regions: [`us`, `europe`, `asia`],
+        headline: `Underneath political and trade power plays, 2027 could prove surprisingly benign if timing aligns—yet France faces acute fiscal strain.`,
+        macro: `Uses a "3 calls" framework (base, riskier, bold). China slowed to 4.6% in 2026 (after 5.0% in 2024–25) and holds ~4.5% in 2027, unbalanced toward exports/tech capex. France grows just 0.5% in 2027 (after 0.3%).`,
+        rates: `France's 5.5% GDP deficit (above 5% target) and rising interest costs keep French bond risk premia elevated through H1 2027. In China, bonds rallied despite record-low yields while equities lagged.`,
+        aiThesis: `AI investment is one of the four critical pillars (alongside politics, equities, central banks) that must fall into place for the benign scenario to materialize.`,
+        assetCalls: `Prepare portfolios for tail-risk scenarios alongside the base case; elevated French OAT risk premium in H1 2027 ahead of presidential and likely parliamentary elections.`,
+        tailRisks: `Post-midterm US Congress pushback and trade/tech/energy power struggles; crowded European election calendar leaving France without a stable parliamentary majority.`
+      },
+      {
+        id: `columbia`,
+        num: `10`,
+        name: `Columbia Threadneedle`,
+        title: `Multi-Asset Outlook 2027: Technological Tailwind, Geopolitical Headwind`,
+        date: `Sept 2026 (Data Aug 2026)`,
+        authors: `Columbia Threadneedle Investments`,
+        camp: `structural`,
+        campLabel: `Multi-Asset CMA`,
+        regions: [`us`, `europe`, `asia`],
+        headline: `Unprecedented AI capex collides with Middle East risk and a US fiscal hangover across 23 updated asset-class CMAs.`,
+        macro: `Positive global growth assuming gradual Middle East normalization. US faces a fiscal hangover offset by even higher AI capex. German infra/defence stimulus feeds through slowly. Japan majority backs stimulus; China supports housing/demand.`,
+        rates: `Interest-rate expectations reversed higher in 2026. Unless central banks hike aggressively, growth holds positive; persistent Middle East commodity spikes would revive stagflation.`,
+        aiThesis: `AI-driven capex boom of unprecedented scale supports economic activity for some time—even if companies do not immediately realize an ROI on that spending.`,
+        assetCalls: `Constructive on risk assets supported by broad-based corporate earnings growth, coming off +38% EM (EUR unhedged) and +19% DM (EUR hedged) equity gains in the 12 months to July 2026 (despite a 9% Iran-strike dip).`,
+        tailRisks: `Stagflation from prolonged Middle East conflict keeping energy/commodity prices elevated; aggressive central bank tightening; doubts over AI capex momentum.`
+      },
+      {
+        id: `hsbc`,
+        num: `11`,
+        name: `HSBC`,
+        title: `Think Future 2027: Broadening AI Horizons`,
+        date: `2027 Outlook`,
+        authors: `HSBC Wealth & Asset Management`,
+        camp: `broadening`,
+        campLabel: `AI Monetisation & Income`,
+        regions: [`us`, `europe`, `asia`],
+        headline: `Capturing AI's shift from capabilities to commercialisation while looking beyond bonds for resilient income.`,
+        macro: `Tug of war between AI as the market's structural driving force and macro/headline/geopolitical surprises that test investor positioning.`,
+        rates: `Higher yield backdrop shifts investor focus toward multi-source income resilience rather than relying solely on traditional sovereign duration.`,
+        aiThesis: `AI's impact is evolving from foundational technical capabilities to broad commercialisation and monetisation across industries—requiring quality and selectivity.`,
+        assetCalls: `Optimistic on 2027 markets with strong emphasis on portfolio resilience: combine AI monetisation beneficiaries with diversified income strategies looking beyond traditional bonds.`,
+        tailRisks: `Macro surprises, shifting policy headlines, and geopolitical developments interrupting market momentum; low-quality AI concentration.`
+      },
+      {
+        id: `gilmour`,
+        num: `12`,
+        name: `Lily Gilmour (2027 Outlook)`,
+        title: `Investment Outlook 2027`,
+        date: `2027 Report`,
+        authors: `Lily Gilmour, Global Market Analyst`,
+        camp: `broadening`,
+        campLabel: `AI Rollout & Europe`,
+        regions: [`us`, `europe`, `asia`],
+        headline: `AI shifts from build-out to rollout—favoring diversified US and unloved European stocks—while bond investors regain pricing power.`,
+        macro: `Robust global growth sustained by government and corporate spending; cooling inflation lets consumer spending recover and broaden the expansion.`,
+        rates: `Massive sovereign and AI-related bond issuance shifts power back to bond investors. Cooling inflation and fewer issuance surprises keep yields relatively stable at attractive levels.`,
+        aiThesis: `Market focus rotates from AI build-out to AI rollout, separating winners from losers. Prefers the diversified US market over hardware-heavy EM benchmarks, and likes Europe's higher weight in rollout beneficiaries.`,
+        assetCalls: `Constructive on European equities (AI rollout sectors + German fiscal stimulus + fading political risk). Alternatives: favor infrastructure assets and small/mid-market PE; cautious on leveraged buyouts & lower-quality real estate.`,
+        tailRisks: `Middle East escalation: US Strategic Petroleum Reserves at historic lows & Iran threatening energy infrastructure could push oil >$150/bbl—leaving policymakers little fiscal room due to elevated yields.`
+      }
+    ];
+
+    const ASSET_MATRIX = [
+      {
+        cat: `equities`, catLabel: `Public Equities`, inst: `UBS CIO GWM`, stance: `Neutral US`, tone: `amber`,
+        call: `Moved US equities to Neutral after exceptional gains; expect moderate global equity returns and wider dispersion across companies.`,
+        risk: `High concentration & valuations leave US sensitive to earnings misses or higher discount rates; favor financially strong hyperscalers.`
+      },
+      {
+        cat: `equities`, catLabel: `Public Equities`, inst: `Goldman Sachs`, stance: `Constructive / Lower Pace`, tone: `pine`,
+        call: `Positive 2027 returns as earnings cushion the AI impulse peak, though US gains drop well below the >20% annualized pace of the past 3 years.`,
+        risk: `Baton pass from AI infrastructure to broader equities fails if financial conditions tighten further.`
+      },
+      {
+        cat: `equities`, catLabel: `Public Equities`, inst: `Lily Gilmour`, stance: `US + Europe Overweight`, tone: `pine`,
+        call: `Prefer diversified US over hardware-heavy EM benchmark; constructive on unloved European equities via AI rollout sectors & German stimulus.`,
+        risk: `Single-name and subsector AI concentration; near-term European political noise.`
+      },
+      {
+        cat: `equities`, catLabel: `Public Equities`, inst: `Invesco`, stance: `Broadening + Japan`, tone: `pine`,
+        call: `Expect markets to broaden beyond concentration as oil/rates stabilize. Strong conviction in Japanese equities (TSE reforms, pricing power).`,
+        risk: `Small/mid-cap sensitivity if growth stalls; US-China trade/tech policy shocks.`
+      },
+      {
+        cat: `equities`, catLabel: `Public Equities`, inst: `Barclays Private Bank`, stance: `AI + Healthcare`, tone: `slate`,
+        call: `Earnings rather than valuations will set the pace; initial playlist pairs AI exposure with healthcare and active management for dispersion.`,
+        risk: `Sharp rise in cost of money or AI capex reversal; defensive sectors are also rate-sensitive.`
+      },
+      {
+        cat: `equities`, catLabel: `Public Equities`, inst: `Neuberger Berman`, stance: `Selective / Ex-Hardware`, tone: `slate`,
+        call: `Focus on firms earning ROI on AI capex, margin preservers, infrastructure, industrials, and defense.`,
+        risk: `Multiple compression from higher borrowing costs; tougher YoY hyperscaler comps; data center political backlash.`
+      },
+      {
+        cat: `fixed_income`, catLabel: `Rates & Gov Bonds`, inst: `Goldman Sachs`, stance: `Reclaiming Hedging Value`, tone: `pine`,
+        call: `Highest real yields in years plus cheap valuations argue for higher bond allocations; long rates decline modestly despite deficits.`,
+        risk: `Renewed oil spike or sticky inflation pushing yields up early in 2027 before demand risks dominate.`
+      },
+      {
+        cat: `fixed_income`, catLabel: `Rates & Gov Bonds`, inst: `UBS CIO GWM`, stance: `Attractive`, tone: `pine`,
+        call: `Quality bonds provide attractive income and portfolio resilience as inflation moderates.`,
+        risk: `Heavy government borrowing and AI/energy capex argue against a sharp collapse in long-term yields.`
+      },
+      {
+        cat: `fixed_income`, catLabel: `Rates & Gov Bonds`, inst: `Barclays Private Bank`, stance: `Neutral / Tactical Extend`, tone: `slate`,
+        call: `Neutral duration in EU & UK (4–6 yrs), neutral-to-UW in US (3–5 yrs); ready to extend on fiscal yield spikes or faster disinflation.`,
+        risk: `Sovereign-led sell-offs where government bonds fall alongside equities.`
+      },
+      {
+        cat: `fixed_income`, catLabel: `Rates & Gov Bonds`, inst: `ING & ABN AMRO`, stance: `France OAT Caution`, tone: `brick`,
+        call: `ABN sees yields falling as markets price cuts, but supply/term premia limit long-end gains. ING flags elevated French OAT risk premia in H1 2027.`,
+        risk: `France 5.5% deficit & hung parliament after April/legislative elections triggering cross-border spread contagion.`
+      },
+      {
+        cat: `fixed_income`, catLabel: `Rates & Gov Bonds`, inst: `Lily Gilmour`, stance: `Investor Power Returns`, tone: `pine`,
+        call: `Massive sovereign and AI issuance shifts bargaining power back to bond buyers; yields stay stable at attractive levels.`,
+        risk: `Acute oil shock (> $150/bbl) reviving inflation while fiscal capacity is constrained.`
+      },
+      {
+        cat: `credit`, catLabel: `IG, HY & Private Credit`, inst: `J.P. Morgan`, stance: `Quality IG & Floating Income`, tone: `slate`,
+        call: `US Tech IG issuance hit $242B through Oct 2026; favor cash-generative hyperscalers over external-funded neoclouds. Private credit yields 9.4%.`,
+        risk: `Rising PIK interest, loan amendments, and maturity extensions among smaller/leveraged borrowers.`
+      },
+      {
+        cat: `credit`, catLabel: `IG, HY & Private Credit`, inst: `Goldman Sachs`, stance: `US Spread Widening`, tone: `brick`,
+        call: `Jumbo AI debt financing leads to episodic indigestion and wider US credit spreads; Europe offers more risk premium & structured credit refuge.`,
+        risk: `Sharper deterioration in hyperscaler free cash flow and corporate refinancing indigestion.`
+      },
+      {
+        cat: `credit`, catLabel: `IG, HY & Private Credit`, inst: `Barclays Private Bank`, stance: `Issuer Selection in HY`, tone: `amber`,
+        call: `Tightest HY spreads likely passed in 2026 (CCC widened). Target strong-fundamental issuers caught in sector-specific widening.`,
+        risk: `Weak-fundamental issuers that relied on 2026 sectoral tailwinds.`
+      },
+      {
+        cat: `credit`, catLabel: `IG, HY & Private Credit`, inst: `Neuberger Berman`, stance: `Disciplined Underwriting`, tone: `amber`,
+        call: `Public FI: hyperscaler yield pick-up, financials & industrials. Private credit: wider new-deal spreads with capital-preservation focus.`,
+        risk: `2027–28 refinancing stress & workouts for some software borrowers; non-tech PIK; leveraged AI infra.`
+      },
+      {
+        cat: `credit`, catLabel: `IG, HY & Private Credit`, inst: `UBS CIO GWM`, stance: `Relative Value HY / EM`, tone: `pine`,
+        call: `Favor HY and EM bonds on a relative basis for higher income and return potential among resilient issuers with manageable maturities.`,
+        risk: `Refinancing wall at higher yields for over-levered issuers.`
+      },
+      {
+        cat: `alternatives`, catLabel: `PE, Hedge Funds & Options`, inst: `Neuberger Berman`, stance: `Middle Market & Secondaries`, tone: `pine`,
+        call: `Favor PE secondaries, co-investments, hybrid capital, and middle market (less IPO-dependent, operational value creation).`,
+        risk: `Slow distributions, older-vintage backlogs, and harder IPO exits for mega/large buyouts.`
+      },
+      {
+        cat: `alternatives`, catLabel: `PE, Hedge Funds & Options`, inst: `Barclays & Goldman`, stance: `Option Overlays & Alts`, tone: `pine`,
+        call: `Barclays uses hedge funds, private markets, relative-value trades & option overlays. Goldman recommends longer-dated equity index options.`,
+        risk: `Rising equity index volatility and correlated equity-bond drawdowns.`
+      },
+      {
+        cat: `alternatives`, catLabel: `PE, Hedge Funds & Options`, inst: `Lily Gilmour`, stance: `Small/Mid PE over LBOs`, tone: `slate`,
+        call: `Higher-for-longer rates and capex favor infrastructure assets and small/mid-market private equity.`,
+        risk: `Cautious on highly leveraged buyouts and lower-quality real estate.`
+      },
+      {
+        cat: `real_assets`, catLabel: `Real Assets & Commodities`, inst: `Neuberger Berman`, stance: `Grid, Cyber & Commodities`, tone: `pine`,
+        call: `Infra resilience (cyber, grid, water), regulated utilities tied to power demand, and commodities (oil, copper, gold, agriculture).`,
+        risk: `Data center overbuilding/political backlash; Middle East peace dropping oil; higher rates freezing real estate deals.`
+      },
+      {
+        cat: `real_assets`, catLabel: `Real Assets & Commodities`, inst: `UBS & Goldman`, stance: `Supply Hedge vs 0% Base`, tone: `amber`,
+        call: `Goldman forecasts ~0% baseline commodity return as oil eases, yet stresses energy's portfolio hedge value. UBS sees power/defense/AI support.`,
+        risk: `Middle East de-escalation depresses spot energy prices.`
+      },
+      {
+        cat: `fx`, catLabel: `Currencies & Gold`, inst: `Goldman & ABN AMRO`, stance: `USD/EUR Split vs Asia`, tone: `amber`,
+        call: `Goldman sees a softer cyclical USD vs revaluing JPY & CNY, plus EUR downside before France's vote. ABN sees EUR staying discounted vs USD.`,
+        risk: `Hawkish Fed surprises or sharp global risk-off lifting USD.`
+      },
+      {
+        cat: `fx`, catLabel: `Currencies & Gold`, inst: `UBS CIO GWM`, stance: `GBP, Select EM & Gold`, tone: `pine`,
+        call: `Favor higher-yielding GBP and select EM currency pairs; CHF stabilizes while underperforming on total return. Gold hedges fiscal/geopolitical risk.`,
+        risk: `UK fiscal/inflation pressure undermining GBP stability (flagged by Santander & Neuberger).`
+      }
+    ];
+
+    const AI_LENSES = {
+      impulse: {
+        title: `01 · Growth Impulse Peak vs. Ongoing Expansion`,
+        summary: `Institutions agree AI remains the dominant driver of earnings and capex, but disagree on whether early 2027 marks a market-testing "second derivative" slowdown or a multi-year handoff.`,
+        cards: [
+          {
+            inst: `Goldman Sachs`, tag: `Early-2027 Peak`, tone: `amber`,
+            text: `Additional AI capex as a share of GDP peaks in early 2027. Manageable for GDP, but a bigger test for markets because AI contributed far more to market value and earnings than to GDP—ending the phase of positive surprises.`
+          },
+          {
+            inst: `ABN AMRO`, tag: `Capex Troika`, tone: `slate`,
+            text: `Slower AI capex growth weighs on Asian hardware exporters and world trade, but surging defence and clean-energy spending ("the capex troika") keeps the combined global investment impulse broadly similar to 2026.`
+          },
+          {
+            inst: `Columbia Threadneedle`, tag: `Macro Cushion`, tone: `pine`,
+            text: `Even if AI capex ultimately fails to deliver rapid company-level ROI, the unprecedented scale of investment still provides durable macro growth support in 2027, offsetting a US fiscal hangover.`
+          },
+          {
+            inst: `Barclays Private Bank`, tag: `Earnings > Multiples`, tone: `slate`,
+            text: `AI carried equities to records in 2026 despite 20-year-high borrowing costs. In 2027, earnings must justify prices, and investors must avoid accidentally doubling down on AI across asset classes.`
+          }
+        ]
+      },
+      financing: {
+        title: `02 · Jumbo Debt Issuance & Free Cash Flow Strain`,
+        summary: `AI has shifted from an internally cash-funded story to a massive capital-markets event—creating clear winners among cash-rich hyperscalers and rising credit stress for leveraged developers.`,
+        cards: [
+          {
+            inst: `J.P. Morgan`, tag: `$242B Tech IG`, tone: `amber`,
+            text: `US Tech IG net bond issuance hit $242B through Oct 2026—nearly double all of 2025. Higher hurdle rates make distant-cash-flow projects harder to justify; cash-generative hyperscalers beat externally funded neoclouds.`
+          },
+          {
+            inst: `UBS CIO GWM`, tag: `Hyperscaler FCF Drop`, tone: `brick`,
+            text: `Charting aggregate free cash flow shows hyperscalers (Amazon, Alphabet, Meta, Microsoft, Oracle) deteriorating sharply as capex surges, while semiconductor suppliers (NVIDIA, Micron, Broadcom, AMD) capture massive FCF.`
+          },
+          {
+            inst: `Goldman Sachs`, tag: `Credit Indigestion`, tone: `brick`,
+            text: `Record credit and equity issuance to fund AI requires discounted pricing, widening US corporate spreads and driving sharp bifurcation between AI-linked issuers and the rest of the corporate market.`
+          },
+          {
+            inst: `Neuberger Berman`, tag: `2027–28 Software Stress`, tone: `amber`,
+            text: `In public credit, hyperscaler bonds offer attractive yield pick-up; in private credit, leveraged AI infrastructure borrowers and software borrowers facing 2027–28 refinancing walls face heightened workout risk.`
+          }
+        ]
+      },
+      rollout: {
+        title: `03 · The Rotation from Build-Out to Commercial Rollout`,
+        summary: `Multiple outlooks advise rotating away from crowded hardware/semiconductor concentration toward enterprise adopters, power utilities, and overlooked regional markets.`,
+        cards: [
+          {
+            inst: `Lily Gilmour`, tag: `Build-Out → Rollout`, tone: `pine`,
+            text: `As focus moves from building AI infrastructure to rolling out applications, relative winners and losers diverge. Prefers diversified US equities over hardware-heavy EM, and favors European stocks weighted to rollout beneficiaries.`
+          },
+          {
+            inst: `HSBC`, tag: `Commercialisation`, tone: `pine`,
+            text: `Highlights "AI: From capabilities to commercialisation"—emphasizing quality and selectivity as market leadership shifts toward companies proving tangible revenue monetisation.`
+          },
+          {
+            inst: `Invesco`, tag: `Beyond Concentration`, tone: `pine`,
+            text: `Expects falling oil and stabilizing rates to let the bull market broaden beyond mega-cap tech concentration into cyclical, industrial, and international equities.`
+          },
+          {
+            inst: `Neuberger Berman`, tag: `Ex-Hardware ROI`, tone: `slate`,
+            text: `Targets public equities that deliver measurable returns on AI capex, preserve margins, and grow earnings outside AI hardware—alongside regulated utilities, grid resilience, industrials, and defense.`
+          }
+        ]
+      },
+      constraints: {
+        title: `04 · Physical Bottlenecks, Labor Shedding & Political Backlash`,
+        summary: `Non-financial constraints—electricity, data center permitting, cyber threats, and early white-collar labor disruption—are emerging as primary 2027 wildcards.`,
+        cards: [
+          {
+            inst: `Neuberger Berman`, tag: `Permitting & Cyber`, tone: `brick`,
+            text: `Flags political backlash slowing data center approvals faster than demand adjusts—putting data center exposure at risk outside fundamentals—plus heightened probability of consequential cyber disruption.`
+          },
+          {
+            inst: `Goldman Sachs`, tag: `Early Job Drag`, tone: `amber`,
+            text: `Notes early signs that AI is already weighing on the job market; sharper AI-related labor shedding would shift market worries rapidly from inflation to lower growth and lower rates.`
+          },
+          {
+            inst: `Santander`, tag: `Uneven Diffusion`, tone: `slate`,
+            text: `AI creates opposing inflation pressures: raising chip/equipment prices near term while boosting long-run productivity. Agent reliability limits mean macro diffusion remains gradual and concentrated in large firms.`
+          },
+          {
+            inst: `UBS CIO GWM`, tag: `Power & Geopolitics`, tone: `amber`,
+            text: `Power shortages, execution delays, and US-China restrictions on chips, rare earths, and AI infrastructure could squeeze efficiency and test investor patience.`
+          }
+        ]
+      }
+    };
+
+    const STRESS_SCENARIOS = {
+      baseline: {
+        title: `Baseline: "Bumpy Resilience" & Late-Cycle Rotation`,
+        probability: `House Base Case (GS, ABN, JPM, UBS, Gilmour)`,
+        narrative: `Middle East energy flows gradually normalize without requiring a formal US-Iran treaty; new non-Qatari LNG eases energy inflation. Central banks execute final recalibration hikes (or hold) before pivoting toward cuts in late 2027. AI capex stays strong though its growth rate peaks early in the year.`,
+        impacts: [
+          { asset: `Global Equities`, score: 68, cls: `pos`, label: `Moderate Positive`, detail: `Single-digit to moderate gains; dispersion rises as leadership broadens.` },
+          { asset: `Quality Gov Bonds`, score: 74, cls: `pos`, label: `Attractive Income`, detail: `High starting yields + late-2027 cuts deliver positive total returns.` },
+          { asset: `HY & Private Credit`, score: 52, cls: `mix`, label: `Selective Carry`, detail: `9.4% private credit carry offset by wider US IG/HY AI issuance spreads.` },
+          { asset: `Energy & Commodities`, score: 35, cls: `neu`, label: `Flat / Easing`, detail: `Oil prices drift lower (~0% baseline commodity return per GS).` },
+          { asset: `US Dollar`, score: 42, cls: `mix`, label: `Cyclically Softer`, detail: `Softens vs JPY/CNY (GS), though EUR remains discounted into April (ABN/GS).` }
+        ],
+        playbook: [
+          `J.P. Morgan: Stay BID—broaden equity exposure across regions & AI rollout, lock in fixed-income carry, diversify with alternatives.`,
+          `UBS: Maintain Neutral US equities, Attractive quality fixed income, and selective HY/EM credit.`,
+          `Barclays: Keep equities for growth while adding active managers to capture rising single-stock dispersion.`
+        ]
+      },
+      oil: {
+        title: `Shock 1: Renewed Middle East Escalation (Oil >$150/bbl)`,
+        probability: `Key Stagflation Tail Risk (Gilmour, GS, Columbia Threadneedle, JPM)`,
+        narrative: `US-Iran negotiations fail and Iran directly targets regional energy infrastructure. With US Strategic Petroleum Reserves at historically low levels and sovereign yields already elevated, governments lack fiscal room to cushion consumers. Oil surges past $150/bbl, slowing growth while reigniting inflation.`,
+        impacts: [
+          { asset: `Global Equities`, score: 22, cls: `neg`, label: `Sharp Drawdown`, detail: `Margin squeeze + higher discount rates hit rate-sensitive & consumer sectors.` },
+          { asset: `Quality Gov Bonds`, score: 28, cls: `neg`, label: `Fails to Hedge`, detail: `Supply-driven inflation forces central banks hawkish; yields rise.` },
+          { asset: `HY & Private Credit`, score: 24, cls: `neg`, label: `Spread Widening`, detail: `Energy-intensive and leveraged borrowers face simultaneous cost & rate stress.` },
+          { asset: `Energy & Commodities`, score: 92, cls: `pos`, label: `Primary Hedge`, detail: `Oil, energy equities, and broad commodities surge as direct beneficiaries.` },
+          { asset: `Gold & Real Assets`, score: 82, cls: `pos`, label: `Inflation Shield`, detail: `Infrastructure, regulated utilities, and gold outperform financial assets.` }
+        ],
+        playbook: [
+          `Barclays & Neuberger: Real assets and commodities (oil, copper, gold, agriculture) are the essential hedge when stocks and bonds fall together.`,
+          `Goldman Sachs: Maintain energy exposure and gold allocations given low implied risk premia.`,
+          `Lily Gilmour: Recognize reduced fiscal buffer capacity when sovereign yields start from multi-decade highs.`
+        ]
+      },
+      ai_bust: {
+        title: `Shock 2: Abrupt AI Capex Halt & Hyperscaler Credit Stress`,
+        probability: `Top Market-Cycle Risk (ABN AMRO, JPM, UBS, Goldman, Neuberger)`,
+        narrative: `ROI disappointment, power/permitting bottlenecks, or tighter hurdle rates trigger a sharp retrenchment in AI data-center spending. Negative wealth effects hit US consumption, leveraged neocloud and 2027–28 software borrowers face defaults/PIK workouts, and Asian hardware exporters suffer.`,
+        impacts: [
+          { asset: `Global Equities`, score: 18, cls: `neg`, label: `Concentrated Sell-Off`, detail: `Mega-cap AI & semiconductor benchmarks tumble; wealth effect drags US GDP.` },
+          { asset: `Quality Gov Bonds`, score: 90, cls: `pos`, label: `Strong Rally`, detail: `Demand shock + early central bank rate cuts drive sharp yield compression.` },
+          { asset: `HY & Private Credit`, score: 20, cls: `neg`, label: `Software / Infra Stress`, detail: `CCC, neocloud debt, and leveraged software loans see acute spread widening.` },
+          { asset: `Energy & Commodities`, score: 34, cls: `neg`, label: `Demand Softening`, detail: `Copper and power-demand expectations reprice lower.` },
+          { asset: `JPY / CHF / Options`, score: 86, cls: `pos`, label: `Convex Protection`, detail: `Longer-dated equity put options and defensive FX (USD/JPY downside) pay off.` }
+        ],
+        playbook: [
+          `Goldman Sachs: Use longer-dated equity index options and downside in rates / USD-JPY as targeted tail protection.`,
+          `Barclays: Extend duration aggressively if growth slows; pair healthcare and non-AI earnings with option overlays.`,
+          `Neuberger Berman: Avoid mega-buyouts dependent on IPOs and leveraged software credit; favor middle-market operational PE.`
+        ]
+      },
+      sovereign: {
+        title: `Shock 3: Sovereign Debt & French Election Fiscal Crisis`,
+        probability: `Key European & Bond-Market Risk (ING, Goldman, ABN, Barclays, UBS)`,
+        narrative: `France's 5.5% deficit and hung parliamentary outcome after the April 2027 presidential election trigger a sovereign risk-premium spiral—or US/UK/Japanese fiscal deficits spark a buyer's strike at the long end of the curve. Rising term premia tighten financial conditions across borders.`,
+        impacts: [
+          { asset: `European / Global Equities`, score: 32, cls: `neg`, label: `Multiple Compression`, detail: `Higher risk-free discount rates & European bank/sovereign spillover.` },
+          { asset: `Long-End Gov Bonds`, score: 20, cls: `neg`, label: `Term-Premium Spike`, detail: `Long-duration sovereigns sell off alongside equities—broken 60/40 hedge.` },
+          { asset: `Short / Quality IG Credit`, score: 60, cls: `mix`, label: `Relative Shelter`, detail: `Short-to-intermediate cash-generative corporates hold up better than sovereigns.` },
+          { asset: `Gold & Hard Assets`, score: 85, cls: `pos`, label: `Fiscal Debasement Hedge`, detail: `Gold diversifies directly against sovereign credibility concerns (UBS).` },
+          { asset: `EUR vs USD / Peers`, score: 26, cls: `neg`, label: `EUR Downside`, detail: `Goldman and ABN flag persistent EUR vulnerability under French fiscal stress.` }
+        ],
+        playbook: [
+          `Barclays: Keep US duration neutral/UW (3–5y) initially, then opportunistically extend ONLY after a material fiscal term-premium spike; rely on option overlays.`,
+          `Goldman Sachs: Express European political risk via EUR downside into France's April election.`,
+          `Neuberger Berman: Focus on short-to-intermediate maturities and monitor UK/France funding strain.`
+        ]
+      },
+      overtighten: {
+        title: `Shock 4: Central Bank Policy Error / Over-Tightening`,
+        probability: `Monetary Tail Risk (JPM, Neuberger, Barclays, Columbia Threadneedle)`,
+        narrative: `Sticky services inflation and tariff/energy second-round effects force the Fed, ECB, or BoJ to hike meaningfully beyond market expectations, lifting real rates above the breaking point for corporate capex and household credit—turning a mid-cycle pause into recession.`,
+        impacts: [
+          { asset: `Global Equities`, score: 25, cls: `neg`, label: `Earnings & Multiple Hit`, detail: `Higher hurdle rates stall investment; cyclical and leveraged stocks tumble.` },
+          { asset: `Quality Gov Bonds`, score: 78, cls: `pos`, label: `Late-Stage Rally`, detail: `Front-end reprices hawkishly first, then long duration rallies as demand breaks.` },
+          { asset: `HY & Private Credit`, score: 18, cls: `neg`, label: `Default Cycle`, detail: `Smaller floating-rate borrowers suffer debt-service shock and PIK distress.` },
+          { asset: `Cash & T-Bills`, score: 75, cls: `pos`, label: `Credible Optionality`, detail: `High short-term cash yields preserve capital for distressed deployment (JPM).` },
+          { asset: `Commodities`, score: 30, cls: `neg`, label: `Recession Drag`, detail: `Industrial metals and oil weaken on global demand contraction.` }
+        ],
+        playbook: [
+          `J.P. Morgan: Cash earns a credible yield—be discerning and stress-test borrower debt-service coverage before deploying capital.`,
+          `Neuberger Berman: Favor disciplined private credit underwriting with senior-secured capital preservation.`,
+          `Barclays: Prepare to extend bond duration rapidly once central banks break economic demand.`
+        ]
+      }
+    };
+
+    const WATCHLIST_ITEMS = [
+      { id: `w1`, window: `Turn of 2026–2027`, title: `Fed & ECB Final Hikes vs. Pause`, source: `Barclays / Goldman / Invesco`, detail: `Watch whether Fed delivers 1–2 final hikes and ECB 1 hike, or if BoE holds.` },
+      { id: `w2`, window: `Early 2027`, title: `AI Investment Impulse Peak`, source: `Goldman Sachs / UBS`, detail: `Monitor hyperscaler capex guidance vs. deteriorating free cash flow and Tech IG supply.` },
+      { id: `w3`, window: `Q1–H1 2027`, title: `US Divided Congress & Tariff Fade`, source: `ING / Goldman`, detail: `Post-midterm Congressional pushback on trade/fiscal policy as 2026 tariff pass-through ends.` },
+      { id: `w4`, window: `April 2027 + H1`, title: `French Presidential & Legislative Votes`, source: `ING / Goldman / ABN`, detail: `France 5.5% deficit and hung-parliament risk driving OAT spreads & EUR volatility.` },
+      { id: `w5`, window: `By Mid-2027`, title: `Bank of Japan Two-Hike Path`, source: `Invesco / Goldman`, detail: `BoJ tightening alongside Japanese fiscal expansion and JPY revaluation pressure.` },
+      { id: `w6`, window: `Throughout 2027`, title: `Middle East Oil & Non-Qatari LNG`, source: `ABN AMRO / Gilmour`, detail: `Track oil supply recovery & new LNG vs. low US SPR and escalation threats above $150/bbl.` },
+      { id: `w7`, window: `Late 2027`, title: `Fed, ECB & Colombia Pivot to Cuts`, source: `Goldman / ABN / Santander`, detail: `Easing headline/core inflation opening the door to late-2027 monetary easing.` },
+      { id: `w8`, window: `2027–2028 Window`, title: `Software & Leveraged Credit Refinancing`, source: `Neuberger / JPM / Barclays`, detail: `Monitor PIK interest usage, loan amendments, CCC spreads, and software borrower workouts.` }
+    ];
+
+    /* =========================================================================
+       APPLICATION STATE
+       ========================================================================= */
+    const DEFAULT_STATE = {
+      macroChartView: `gdp`,
+      selectedInstId: `goldman`,
+      instSearch: ``,
+      instCamp: `all`,
+      instRegion: `all`,
+      compareIds: [`goldman`, `invesco`, `jpm`],
+      assetFilter: `all`,
+      aiLens: `impulse`,
+      stressScenario: `baseline`,
+      checkedWatchlist: []
+    };
+
+    let appState = JSON.parse(JSON.stringify(DEFAULT_STATE));
+    let macroChartInstance = null;
+
+    function getThemeColor(varName) {
+      return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+    }
+
+    async function persistState() {
+      if (window.notebookAppApi && typeof window.notebookAppApi.setAppState === 'function') {
+        try {
+          await window.notebookAppApi.setAppState(appState);
+        } catch (e) {
+          /* Ignore serialization errors in offline preview */
+        }
+      }
+    }
+
+    function scrollToSection(id) {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: `smooth`, block: `start` });
+    }
+
+    /* =========================================================================
+       01: MACRO CHART RENDERING (Chart.js)
+       ========================================================================= */
+    function setMacroChartView(view) {
+      appState.macroChartView = view;
+      const views = [`gdp`, `surprise`, `rates`, `capital`];
+      views.forEach(function (v) {
+        const btn = document.getElementById(`chart-btn-` + v);
+        if (btn) btn.setAttribute(`aria-pressed`, v === view ? `true` : `false`);
+      });
+      renderMacroChart();
+      persistState();
+    }
+
+    function renderMacroChart() {
+      const canvas = document.getElementById(`macroChart`);
+      if (!canvas || typeof Chart === `undefined`) return;
+
+      const titleEl = document.getElementById(`macro-chart-title`);
+      const subEl = document.getElementById(`macro-chart-subtitle`);
+      const noteEl = document.getElementById(`macro-chart-note`);
+
+      const c1 = getThemeColor(`--data-1`);
+      const c2 = getThemeColor(`--data-2`);
+      const c3 = getThemeColor(`--data-3`);
+      const c4 = getThemeColor(`--data-4`);
+      const cCtx = getThemeColor(`--data-context`);
+      const gridColor = getThemeColor(`--outline-variant`);
+      const inkColor = getThemeColor(`--on-surface`);
+      const mutedColor = getThemeColor(`--on-surface-variant`);
+
+      if (macroChartInstance) {
+        macroChartInstance.destroy();
+        macroChartInstance = null;
+      }
+
+      const view = appState.macroChartView;
+      let config = null;
+
+      if (view === `gdp`) {
+        if (titleEl) titleEl.textContent = `Explicit 2026 vs. 2027 GDP Forecasts (%)`;
+        if (subEl) subEl.textContent = `Institutional base-case projections where numeric figures are cited`;
+        if (noteEl) noteEl.textContent = `Sources: Goldman Sachs (Global 2.7%→2.8%), Barclays (US 2.4%→2.1%), ING (China 4.6%→4.5%; France 0.3%→0.5%), Santander (Eurozone 1.4%, Colombia 2.0%, Brazil 1.3% in 2027).`;
+
+        config = {
+          type: `bar`,
+          data: {
+            labels: [`Global (GS)`, `US (Barclays)`, `China (ING)`, `Colombia (Sant.)`, `Euro Area (Sant.)`, `Brazil (Sant.)`, `France (ING)`],
+            datasets: [
+              {
+                label: `2026 Estimate (%)`,
+                data: [2.7, 2.4, 4.6, null, null, null, 0.3],
+                backgroundColor: cCtx,
+                borderRadius: 2
+              },
+              {
+                label: `2027 Forecast (%)`,
+                data: [2.8, 2.1, 4.5, 2.0, 1.4, 1.3, 0.5],
+                backgroundColor: c1,
+                borderRadius: 2
+              }
+            ]
+          },
+          options: buildChartOptions(`% Annual GDP Growth`, gridColor, inkColor, mutedColor)
+        };
+      } else if (view === `surprise`) {
+        if (titleEl) titleEl.textContent = `2026 GDP Surprises vs. Prior Forecasts (Goldman Sachs, pp)`;
+        if (subEl) subEl.textContent = `AI-export hubs outperformed sharply despite the Iran-war energy shock (+1.3pp global CPI)`;
+        if (noteEl) noteEl.textContent = `Source: Goldman Sachs Global Economics Analyst (12 Nov 2026). Global headline inflation on track for 3.7% Q4/Q4 in 2026 (+1.3pp above prior forecast).`;
+
+        config = {
+          type: `bar`,
+          data: {
+            labels: [`Taiwan (AI Exports)`, `Korea (AI Exports)`, `Global Aggregate`, `China`, `US`, `Euro Area`],
+            datasets: [
+              {
+                label: `2026 GDP Surprise vs. Prior Forecast (pp)`,
+                data: [8.6, 1.9, -0.1, -0.2, -0.3, -0.3],
+                backgroundColor: [c3, c3, c2, c4, c4, c4],
+                borderRadius: 2
+              }
+            ]
+          },
+          options: buildChartOptions(`Percentage Points (pp)`, gridColor, inkColor, mutedColor)
+        };
+      } else if (view === `rates`) {
+        if (titleEl) titleEl.textContent = `2027 Central Bank Expectations Across Institutions`;
+        if (subEl) subEl.textContent = `Expected net rate moves: near-term hikes vs. late-2027 easing`;
+        if (noteEl) noteEl.textContent = `Goldman: Fed +2 hikes / ECB +1 hike then cuts late 2027. Invesco: BoJ +2 hikes by mid-2027, ECB +1, BoE 0. Barclays: Fed +2 around turn of year then long pause.`;
+
+        config = {
+          type: `bar`,
+          data: {
+            labels: [`Fed (Goldman)`, `Fed (Barclays)`, `ECB (Goldman)`, `ECB (Invesco)`, `BoE (Invesco)`, `BoJ (Invesco)`],
+            datasets: [
+              {
+                label: `Expected Hikes (Turn of Year / H1 2027)`,
+                data: [2, 2, 1, 1, 0, 2],
+                backgroundColor: c4,
+                borderRadius: 2
+              },
+              {
+                label: `Signals Late-2027 Rate Cuts (1 = Yes, 0 = Pause/Hold)`,
+                data: [1, 0, 1, 0, 0, 0],
+                backgroundColor: c3,
+                borderRadius: 2
+              }
+            ]
+          },
+          options: buildChartOptions(`Count of Moves / Policy Signal`, gridColor, inkColor, mutedColor)
+        };
+      } else {
+        if (titleEl) titleEl.textContent = `Capital Supply, Returns & Fiscal Benchmarks (%)`;
+        if (subEl) subEl.textContent = `Key yields, deficit ratios, and trailing equity momentum shaping 2027 valuations`;
+        if (noteEl) noteEl.textContent = `Sources: Columbia Threadneedle (12m to Jul 2026: EM +38%, DM +19%, Iran dip -9%), JPM (Private Credit 9.4% yield), ING (France deficit 5.5% vs 5.0% target), Santander (Brazil/Mexico ~4% CPI).`;
+
+        config = {
+          type: `bar`,
+          data: {
+            labels: [`EM Eq. 12m (CTI)`, `DM Eq. 12m (CTI)`, `Priv. Credit Yield (JPM)`, `France Deficit (ING)`, `Brazil/Mex CPI (Sant.)`, `Iran-Strike Dip (CTI)`],
+            datasets: [
+              {
+                label: `Reported Figure (%)`,
+                data: [38.0, 19.0, 9.4, 5.5, 4.0, -9.0],
+                backgroundColor: [c1, c1, c3, c4, c2, c4],
+                borderRadius: 2
+              }
+            ]
+          },
+          options: buildChartOptions(`Percent (%)`, gridColor, inkColor, mutedColor)
+        };
+      }
+
+      macroChartInstance = new Chart(canvas.getContext(`2d`), config);
+    }
+
+    function buildChartOptions(yTitle, gridColor, inkColor, mutedColor) {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: `top`,
+            align: `start`,
+            labels: {
+              color: inkColor,
+              font: { family: `Geist Mono, monospace`, size: 11 }
+            }
+          },
+          tooltip: {
+            backgroundColor: inkColor,
+            titleFont: { family: `Plus Jakarta Sans, sans-serif`, size: 12 },
+            bodyFont: { family: `Geist Mono, monospace`, size: 12 }
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { color: inkColor, font: { family: `Plus Jakarta Sans, sans-serif`, size: 11 } }
+          },
+          y: {
+            title: { display: true, text: yTitle, color: mutedColor, font: { family: `Geist Mono, monospace`, size: 11 } },
+            grid: { color: gridColor },
+            ticks: { color: mutedColor, font: { family: `Geist Mono, monospace`, size: 11 } }
+          }
+        }
+      };
+    }
+
+    /* =========================================================================
+       02: INSTITUTION EXPLORER & DETAIL READER
+       ========================================================================= */
+    function handleInstFilterChange() {
+      const searchEl = document.getElementById(`inst-search`);
+      const campEl = document.getElementById(`inst-camp-filter`);
+      const regionEl = document.getElementById(`inst-region-filter`);
+      appState.instSearch = searchEl ? searchEl.value.trim().toLowerCase() : ``;
+      appState.instCamp = campEl ? campEl.value : `all`;
+      appState.instRegion = regionEl ? regionEl.value : `all`;
+      renderInstitutionsExplorer();
+      persistState();
+    }
+
+    function clearInstFilters() {
+      appState.instSearch = ``;
+      appState.instCamp = `all`;
+      appState.instRegion = `all`;
+      const searchEl = document.getElementById(`inst-search`);
+      const campEl = document.getElementById(`inst-camp-filter`);
+      const regionEl = document.getElementById(`inst-region-filter`);
+      if (searchEl) searchEl.value = ``;
+      if (campEl) campEl.value = `all`;
+      if (regionEl) regionEl.value = `all`;
+      renderInstitutionsExplorer();
+      persistState();
+    }
+
+    function selectInstitution(id) {
+      appState.selectedInstId = id;
+      renderInstitutionsExplorer();
+      persistState();
+    }
+
+    function getCampTagClass(camp) {
+      if (camp === `broadening`) return `tag-pine`;
+      if (camp === `late-cycle`) return `tag-amber`;
+      return `tag-slate`;
+    }
+
+    function renderInstitutionsExplorer() {
+      const gridEl = document.getElementById(`inst-card-grid`);
+      const emptyEl = document.getElementById(`inst-empty-state`);
+      const countEl = document.getElementById(`inst-match-count`);
+      if (!gridEl) return;
+
+      const filtered = INSTITUTIONS.filter(function (inst) {
+        if (appState.instCamp !== `all` && inst.camp !== appState.instCamp) return false;
+        if (appState.instRegion !== `all` && inst.regions.indexOf(appState.instRegion) === -1) return false;
+        if (appState.instSearch) {
+          const blob = [
+            inst.name, inst.title, inst.headline, inst.macro,
+            inst.rates, inst.aiThesis, inst.assetCalls, inst.tailRisks
+          ].join(` `).toLowerCase();
+          if (blob.indexOf(appState.instSearch) === -1) return false;
+        }
+        return true;
+      });
+
+      if (countEl) countEl.textContent = `Showing ` + filtered.length + ` of ` + INSTITUTIONS.length + ` institutions`;
+
+      if (filtered.length === 0) {
+        gridEl.innerHTML = ``;
+        if (emptyEl) emptyEl.style.display = `grid`;
+      } else {
+        if (emptyEl) emptyEl.style.display = `none`;
+        const selectedExists = filtered.some(function (i) { return i.id === appState.selectedInstId; });
+        if (!selectedExists) appState.selectedInstId = filtered[0].id;
+
+        gridEl.innerHTML = filtered.map(function (inst) {
+          const isSelected = inst.id === appState.selectedInstId;
+          return `
+            <button type="button"
+              class="inst-card ` + (isSelected ? `is-selected` : ``) + `"
+              role="option"
+              aria-selected="` + (isSelected ? `true` : `false`) + `"
+              onclick="selectInstitution('` + inst.id + `')">
+              <div class="inst-card-top">
+                <span class="index-num">` + inst.num + `</span>
+                <span class="tag ` + getCampTagClass(inst.camp) + `">` + inst.campLabel + `</span>
+              </div>
+              <div class="inst-name">` + inst.name + `</div>
+              <div class="inst-theme">` + inst.title + `</div>
+              <div class="inst-card-foot">
+                <span class="dossier-meta">` + inst.date + `</span>
+              </div>
+            </button>
+          `;
+        }).join(``);
+      }
+
+      renderInstitutionDetail();
+    }
+
+    function renderInstitutionDetail() {
+      const pane = document.getElementById(`inst-detail-pane`);
+      if (!pane) return;
+      const inst = INSTITUTIONS.find(function (i) { return i.id === appState.selectedInstId; }) || INSTITUTIONS[0];
+
+      pane.innerHTML = `
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:var(--space-sm);border-bottom:var(--section-rule);padding-bottom:var(--space-sm);">
+          <div>
+            <div style="display:flex;align-items:center;gap:var(--space-sm);margin-bottom:var(--space-xs);">
+              <span class="index-num">` + inst.num + `</span>
+              <span class="dossier-meta">` + inst.date + ` · ` + inst.authors + `</span>
+            </div>
+            <h3 class="section-title">` + inst.name + `: ` + inst.title + `</h3>
+          </div>
+          <span class="tag ` + getCampTagClass(inst.camp) + `">` + inst.campLabel + `</span>
+        </div>
+
+        <p class="standfirst" style="margin-top:0;">` + inst.headline + `</p>
+
+        <div class="detail-section-grid">
+          <div class="detail-block">
+            <div class="detail-block-title">Macro &amp; Regional View</div>
+            <p class="muted-copy" style="color:var(--on-surface);">` + inst.macro + `</p>
+          </div>
+          <div class="detail-block">
+            <div class="detail-block-title">Inflation &amp; Central Banks</div>
+            <p class="muted-copy" style="color:var(--on-surface);">` + inst.rates + `</p>
+          </div>
+          <div class="detail-block">
+            <div class="detail-block-title">AI Capex &amp; Earnings Thesis</div>
+            <p class="muted-copy" style="color:var(--on-surface);">` + inst.aiThesis + `</p>
+          </div>
+          <div class="detail-block">
+            <div class="detail-block-title">Asset Class Positioning</div>
+            <p class="muted-copy" style="color:var(--on-surface);">` + inst.assetCalls + `</p>
+          </div>
+        </div>
+
+        <div class="aside-box" style="margin-top:var(--space-xs);">
+          <div class="detail-block-title" style="color:var(--error);">Key Tail Risks &amp; Hedges</div>
+          <p style="font-size:0.9375rem;">` + inst.tailRisks + `</p>
+        </div>
+
+        <div class="btn-row">
+          <button type="button" class="btn btn-compact" onclick="pinToComparator('` + inst.id + `')">
+            Send to Comparator Slot A
+          </button>
+          <button type="button" class="btn btn-compact" onclick="scrollToSection('sec-compare')">
+            Open Head-to-Head View
+          </button>
+        </div>
+      `;
+    }
+
+    function pinToComparator(id) {
+      appState.compareIds[0] = id;
+      populateCompareSelects();
+      renderCompareGrid();
+      scrollToSection(`sec-compare`);
+      persistState();
+    }
+
+    /* =========================================================================
+       03: HEAD-TO-HEAD COMPARATOR
+       ========================================================================= */
+    function populateCompareSelects() {
+      const slotA = document.getElementById(`compare-slot-a`);
+      const slotB = document.getElementById(`compare-slot-b`);
+      const slotC = document.getElementById(`compare-slot-c`);
+      const optionsHtml = INSTITUTIONS.map(function (i) {
+        return `<option value="` + i.id + `">` + i.num + ` · ` + i.name + `</option>`;
+      }).join(``);
+
+      if (slotA) {
+        slotA.innerHTML = optionsHtml;
+        slotA.value = appState.compareIds[0] || `goldman`;
+      }
+      if (slotB) {
+        slotB.innerHTML = optionsHtml;
+        slotB.value = appState.compareIds[1] || `invesco`;
+      }
+      if (slotC) {
+        slotC.innerHTML = `<option value="none">— None (2-Way Compare) —</option>` + optionsHtml;
+        slotC.value = appState.compareIds[2] || `jpm`;
+      }
+    }
+
+    function handleCompareChange() {
+      const a = document.getElementById(`compare-slot-a`);
+      const b = document.getElementById(`compare-slot-b`);
+      const c = document.getElementById(`compare-slot-c`);
+      appState.compareIds = [
+        a ? a.value : `goldman`,
+        b ? b.value : `invesco`,
+        c ? c.value : `none`
+      ];
+      renderCompareGrid();
+      persistState();
+    }
+
+    function loadComparePreset(idA, idB, idC) {
+      appState.compareIds = [idA, idB, idC];
+      populateCompareSelects();
+      renderCompareGrid();
+      persistState();
+    }
+
+    function renderCompareGrid() {
+      const grid = document.getElementById(`compare-output-grid`);
+      if (!grid) return;
+
+      const selected = appState.compareIds
+        .filter(function (id) { return id && id !== `none`; })
+        .map(function (id) {
+          return INSTITUTIONS.find(function (i) { return i.id === id; });
+        })
+        .filter(Boolean);
+
+      grid.innerHTML = selected.map(function (inst) {
+        return `
+          <div class="compare-col">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:var(--space-xs);">
+              <span class="index-num">` + inst.num + `</span>
+              <span class="tag ` + getCampTagClass(inst.camp) + `">` + inst.campLabel + `</span>
+            </div>
+            <div>
+              <h3 class="card-title">` + inst.name + `</h3>
+              <p class="muted-copy">` + inst.title + `</p>
+            </div>
+            <div class="compare-row">
+              <div class="detail-block-title">Headline Conviction</div>
+              <p style="font-size:0.9rem;font-weight:600;">` + inst.headline + `</p>
+            </div>
+            <div class="compare-row">
+              <div class="detail-block-title">Macro &amp; Policy Path</div>
+              <p class="muted-copy" style="color:var(--on-surface);">` + inst.macro + ` ` + inst.rates + `</p>
+            </div>
+            <div class="compare-row">
+              <div class="detail-block-title">AI Cycle View</div>
+              <p class="muted-copy" style="color:var(--on-surface);">` + inst.aiThesis + `</p>
+            </div>
+            <div class="compare-row">
+              <div class="detail-block-title">Asset Allocation</div>
+              <p class="muted-copy" style="color:var(--on-surface);">` + inst.assetCalls + `</p>
+            </div>
+            <div class="compare-row">
+              <div class="detail-block-title" style="color:var(--error);">Primary Tail Risk</div>
+              <p class="muted-copy" style="color:var(--on-surface);">` + inst.tailRisks + `</p>
+            </div>
+          </div>
+        `;
+      }).join(``);
+    }
+
+    /* =========================================================================
+       04: ASSET CLASS MATRIX
+       ========================================================================= */
+    function setAssetFilter(cat) {
+      appState.assetFilter = cat;
+      const btns = document.querySelectorAll(`[data-asset-filter]`);
+      btns.forEach(function (b) {
+        b.setAttribute(`aria-pressed`, b.getAttribute(`data-asset-filter`) === cat ? `true` : `false`);
+      });
+      renderAssetMatrix();
+      persistState();
+    }
+
+    function renderAssetMatrix() {
+      const tbody = document.getElementById(`asset-matrix-body`);
+      const countEl = document.getElementById(`asset-row-count`);
+      if (!tbody) return;
+
+      const rows = ASSET_MATRIX.filter(function (r) {
+        return appState.assetFilter === `all` || r.cat === appState.assetFilter;
+      });
+
+      if (countEl) countEl.textContent = `Showing ` + rows.length + ` of ` + ASSET_MATRIX.length + ` institutional calls`;
+
+      tbody.innerHTML = rows.map(function (r) {
+        const tagCls = `tag-` + r.tone;
+        return `
+          <tr>
+            <td class="num-cell" style="font-weight:600;color:var(--secondary);">` + r.catLabel + `</td>
+            <td style="font-weight:600;white-space:nowrap;">` + r.inst + `</td>
+            <td><span class="tag ` + tagCls + `">` + r.stance + `</span></td>
+            <td>` + r.call + `</td>
+            <td class="muted-copy">` + r.risk + `</td>
+          </tr>
+        `;
+      }).join(``);
+    }
+
+    /* =========================================================================
+       05: THE AI CYCLE DEBATE
+       ========================================================================= */
+    function setAiLens(lensKey) {
+      appState.aiLens = lensKey;
+      const btns = document.querySelectorAll(`[data-ai-lens]`);
+      btns.forEach(function (b) {
+        b.setAttribute(`aria-pressed`, b.getAttribute(`data-ai-lens`) === lensKey ? `true` : `false`);
+      });
+      renderAiLens();
+      persistState();
+    }
+
+    function renderAiLens() {
+      const panel = document.getElementById(`ai-lens-panel`);
+      if (!panel) return;
+      const data = AI_LENSES[appState.aiLens] || AI_LENSES.impulse;
+
+      panel.innerHTML = `
+        <div style="border-bottom:var(--section-rule);padding-bottom:var(--space-sm);">
+          <h3 class="card-title">` + data.title + `</h3>
+          <p class="muted-copy" style="margin-top:var(--space-xs);color:var(--on-surface);">` + data.summary + `</p>
+        </div>
+        <div class="lens-grid">
+          ` + data.cards.map(function (c) {
+            return `
+              <div class="detail-block">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:var(--space-xs);margin-bottom:var(--space-xs);">
+                  <strong style="font-family:var(--font-headline);font-size:1rem;">` + c.inst + `</strong>
+                  <span class="tag tag-` + c.tone + `">` + c.tag + `</span>
+                </div>
+                <p class="muted-copy" style="color:var(--on-surface);">` + c.text + `</p>
+              </div>
+            `;
+          }).join(``) + `
+        </div>
+      `;
+    }
+
+    /* =========================================================================
+       06: TAIL-RISK STRESS-TEST SIMULATOR
+       ========================================================================= */
+    function setStressScenario(key) {
+      appState.stressScenario = key;
+      const btns = document.querySelectorAll(`[data-scenario]`);
+      btns.forEach(function (b) {
+        b.setAttribute(`aria-pressed`, b.getAttribute(`data-scenario`) === key ? `true` : `false`);
+      });
+      renderStressPanel();
+      persistState();
+    }
+
+    function renderStressPanel() {
+      const panel = document.getElementById(`stress-output-panel`);
+      if (!panel) return;
+      const sc = STRESS_SCENARIOS[appState.stressScenario] || STRESS_SCENARIOS.baseline;
+
+      panel.innerHTML = `
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:var(--space-sm);border-bottom:var(--section-rule);padding-bottom:var(--space-sm);">
+          <div>
+            <h3 class="card-title">` + sc.title + `</h3>
+            <p class="dossier-meta" style="margin-top:var(--space-xs);">` + sc.probability + `</p>
+          </div>
+        </div>
+
+        <p class="body-copy" style="margin-top:var(--space-sm);">` + sc.narrative + `</p>
+
+        <div class="impact-grid">
+          ` + sc.impacts.map(function (imp) {
+            return `
+              <div class="impact-tile">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:var(--space-xs);">
+                  <span style="font-family:var(--font-label);font-size:0.72rem;text-transform:uppercase;color:var(--on-surface-variant);">` + imp.asset + `</span>
+                  <span style="font-family:var(--font-label);font-size:0.72rem;font-weight:600;">` + imp.label + `</span>
+                </div>
+                <div class="impact-meter" aria-hidden="true">
+                  <div class="impact-fill ` + imp.cls + `" style="width:` + imp.score + `%;"></div>
+                </div>
+                <p class="muted-copy" style="font-size:0.8rem;">` + imp.detail + `</p>
+              </div>
+            `;
+          }).join(``) + `
+        </div>
+
+        <div class="aside-box" style="margin-top:var(--space-md);">
+          <div class="detail-block-title">Institutional Defensive Playbook</div>
+          <ul class="detail-list">
+            ` + sc.playbook.map(function (p) { return `<li>` + p + `</li>`; }).join(``) + `
+          </ul>
+        </div>
+      `;
+    }
+
+    /* =========================================================================
+       07: CATALYST WATCHLIST & EXPORT
+       ========================================================================= */
+    function toggleWatchlistItem(id) {
+      const idx = appState.checkedWatchlist.indexOf(id);
+      if (idx === -1) {
+        appState.checkedWatchlist.push(id);
+      } else {
+        appState.checkedWatchlist.splice(idx, 1);
+      }
+      renderWatchlist();
+      persistState();
+    }
+
+    function renderWatchlist() {
+      const grid = document.getElementById(`watchlist-grid`);
+      const prog = document.getElementById(`watchlist-progress`);
+      if (!grid) return;
+
+      if (prog) prog.textContent = appState.checkedWatchlist.length + ` of ` + WATCHLIST_ITEMS.length + ` catalysts tracked`;
+
+      grid.innerHTML = WATCHLIST_ITEMS.map(function (item) {
+        const checked = appState.checkedWatchlist.indexOf(item.id) !== -1;
+        return `
+          <label class="watch-check" for="chk-` + item.id + `">
+            <input type="checkbox" id="chk-` + item.id + `" ` + (checked ? `checked` : ``) + ` onchange="toggleWatchlistItem('` + item.id + `')">
+            <div style="display:grid;gap:0.2rem;">
+              <div style="display:flex;flex-wrap:wrap;gap:var(--space-xs);align-items:center;">
+                <span class="tag tag-slate">` + item.window + `</span>
+                <span class="dossier-meta">` + item.source + `</span>
+              </div>
+              <strong style="font-size:0.95rem;` + (checked ? `text-decoration:line-through;color:var(--on-surface-variant);` : ``) + `">` + item.title + `</strong>
+              <span class="muted-copy" style="font-size:0.84rem;">` + item.detail + `</span>
+            </div>
+          </label>
+        `;
+      }).join(``);
+    }
+
+    function exportBriefingSummary() {
+      const headers = [`Index`, `Institution`, `Report Title`, `Date`, `Camp`, `Headline`, `Rates Path`, `AI Thesis`, `Asset Calls`, `Tail Risks`];
+      const escapeCsv = function (val) {
+        return `"` + String(val).replace(/"/g, `""`) + `"`;
+      };
+      const lines = [headers.join(`,`)].concat(
+        INSTITUTIONS.map(function (i) {
+          return [
+            i.num, i.name, i.title, i.date, i.campLabel,
+            i.headline, i.rates, i.aiThesis, i.assetCalls, i.tailRisks
+          ].map(escapeCsv).join(`,`);
+        })
+      );
+      const csvContent = lines.join(`\n`);
+
+      if (window.notebookAppApi && typeof window.notebookAppApi.triggerFileDownload === 'function') {
+        window.notebookAppApi.triggerFileDownload({
+          content: csvContent,
+          contentType: `text/csv`,
+          encoding: `UTF-8`,
+          filename: `2027_institutional_outlooks_matrix.csv`
+        });
+      } else {
+        const blob = new Blob([csvContent], { type: `text/csv;charset=utf-8;` });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement(`a`);
+        link.href = url;
+        link.download = `2027_institutional_outlooks_matrix.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+    }
+
+    function resetWorkspaceState(btn) {
+      if (btn && btn.dataset.armed !== `true`) {
+        btn.dataset.armed = `true`;
+        const span = btn.querySelector(`span`);
+        if (span) span.textContent = `Confirm Reset`;
+        setTimeout(function () {
+          if (btn.dataset.armed === `true`) {
+            btn.dataset.armed = `false`;
+            const s = btn.querySelector(`span`);
+            if (s) s.textContent = `Reset Workspace`;
+          }
+        }, 3500);
+        return;
+      }
+      if (btn) {
+        btn.dataset.armed = `false`;
+        const span = btn.querySelector(`span`);
+        if (span) span.textContent = `Reset Workspace`;
+      }
+      appState = JSON.parse(JSON.stringify(DEFAULT_STATE));
+      syncUiToState();
+      persistState();
+    }
+
+    function syncUiToState() {
+      const searchEl = document.getElementById(`inst-search`);
+      const campEl = document.getElementById(`inst-camp-filter`);
+      const regionEl = document.getElementById(`inst-region-filter`);
+      if (searchEl) searchEl.value = appState.instSearch || ``;
+      if (campEl) campEl.value = appState.instCamp || `all`;
+      if (regionEl) regionEl.value = appState.instRegion || `all`;
+
+      setMacroChartView(appState.macroChartView || `gdp`);
+      renderInstitutionsExplorer();
+      populateCompareSelects();
+      renderCompareGrid();
+      setAssetFilter(appState.assetFilter || `all`);
+      setAiLens(appState.aiLens || `impulse`);
+      setStressScenario(appState.stressScenario || `baseline`);
+      renderWatchlist();
+    }
+
+    /* =========================================================================
+       INITIALIZATION & NOTEBOOK SHIM HYDRATION
+       ========================================================================= */
+    async function initDashboard() {
+      if (window.notebookAppApi && typeof window.notebookAppApi.getAppState === 'function') {
+        try {
+          const saved = await window.notebookAppApi.getAppState();
+          if (saved && typeof saved === `object`) {
+            appState = Object.assign({}, DEFAULT_STATE, saved);
+          }
+        } catch (e) {
+          /* Fallback to default state */
+        }
+      }
+
+      syncUiToState();
+
+      if (typeof lucide !== `undefined` && typeof lucide.createIcons === `function`) {
+        lucide.createIcons();
+      }
+
+      if (window.notebookAppApi && typeof window.notebookAppApi.notifyAppReady === 'function') {
+        window.notebookAppApi.notifyAppReady();
+      }
+    }
+
+    document.addEventListener(`DOMContentLoaded`, initDashboard);
+  </script>
+</body>
+</html>
